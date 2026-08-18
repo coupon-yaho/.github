@@ -242,8 +242,8 @@ td.dim,.dim{color:var(--ink3)}
   </div>
   <div class="a who">
     <span><b>4조 KAFKICK</b></span>
-    <span>허건 · 박지훈 · 설승환 · 유희준 · 이경주</span>
-    <span>Spring Boot 4.1 · MySQL · Redis · Kafka</span>
+    <span>허건, 박지훈, 설승환, 유희준, 이경주</span>
+    <span>Spring Boot 4.1, MySQL, Redis, Kafka</span>
   </div>
 </div>
 
@@ -281,7 +281,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 03 도메인 3단계 ═══════════════════════════════════════ -->
 <div data-part="0" class="slide">
-  <div class="a mark">파트 0 · 1</div>
   <div class="a ttl">쿠폰을 세 단계로 나눴다</div>
   <div class="accbar"></div>
   <div class="body">
@@ -320,7 +319,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 04 발급 방어 ═══════════════════════════════════════════ -->
 <div data-part="0" class="slide">
-  <div class="a mark">파트 0 · 2</div>
   <div class="a ttl">발급은 애플리케이션 검사만 믿지 않는다</div>
   <div class="a lede">DB 제약과 락을 <b>함께</b> 씁니다.</div>
   <div class="accbar"></div>
@@ -337,7 +335,7 @@ td.dim,.dim{color:var(--ink3)}
         <div class="note" style="margin-bottom:28px"><code>active_count</code> 는 누적 발급량이 아니라 <b>현재 ISSUED + USED 수량</b>입니다. 취소·만료 시 감소시킵니다. 누적으로 두면 취소한 쿠폰이 재고로 돌아오지 않습니다.</div>
         <div class="say">이 세 줄이 <span class="hl">파트 III 의 검증 대상</span>입니다</div>
         <div class="bd" style="font-size:21px;color:var(--ink2);line-height:1.6;margin-top:16px">
-          1인 1매(1) · 초과발급(3) · 취소분 재고 복원(<code>active_count</code>). 여기서 지키기로 한 규칙을 저기서 300만 건에 대해 전수로 다시 확인합니다.</div>
+          1인 1매(1), 초과발급(3), 취소분 재고 복원(<code>active_count</code>). 여기서 지키기로 한 규칙을 저기서 300만 건에 대해 전수로 다시 확인합니다.</div>
       </div>
     </div>
   </div>
@@ -346,7 +344,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 05 관제 데이터 배치 ════════════════════════════════════ -->
 <div data-part="1" class="slide">
-  <div class="a mark">파트 I · 1</div>
   <div class="a ttl">관제가 측정 대상을 바꾸지 않게 한다</div>
   <div class="a lede">관제가 측정을 오염시키는 경로는 둘입니다. <b>발급 경로에 관제용 쓰기를 얹는 것</b>, <b>대시보드 조회가 운영 DB 자원을 가져가는 것</b>. 둘 다 v1/v2/v3 의 숫자를 바꿉니다.</div>
   <div class="accbar"></div>
@@ -383,7 +380,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 06 Prometheus ═════════════════════════════════════════ -->
 <div data-part="1" class="slide">
-  <div class="a mark">파트 I · 2</div>
   <div class="a ttl">가장 고민한 결정, Prometheus 를 안 씁니다</div>
   <div class="a lede">Micrometer 는 쓰되 레지스트리는 인메모리. 시계열 보관은 Redis + MySQL 이 합니다. 이유는 <b>원천을 이미 나눠놨기 때문</b>입니다.</div>
   <div class="accbar"></div>
@@ -392,7 +388,7 @@ td.dim,.dim{color:var(--ink3)}
       <table>
         <thead><tr><th>무엇</th><th>원천</th></tr></thead>
         <tbody>
-          <tr><td><b>공식 p95 · p99 · TPS</b></td><td>부하 생성기 원본 표본<br><span class="dim">클라이언트가 성공 응답 받은 시점 기준</span></td></tr>
+          <tr><td><b>공식 p95, p99, TPS</b></td><td>부하 생성기 원본 표본<br><span class="dim">클라이언트가 성공 응답 받은 시점 기준</span></td></tr>
           <tr><td><b>실시간 서버 지연 · 자원</b></td><td>Micrometer → batch 수집기 → Redis</td></tr>
           <tr><td><b>완료 회차 시계열</b></td><td>MySQL</td></tr>
           <tr><td><b>요청별 실패 원인</b></td><td><code>issue_attempts</code> <span class="dim">(건수 원천 아님)</span></td></tr>
@@ -410,13 +406,13 @@ td.dim,.dim{color:var(--ink3)}
         <div class="note" style="margin-top:26px">Prometheus 를 병행하면 <b>이 판정이 두 경로에 생깁니다.</b> 비어 있는 칸은 못 채우면서 회차 경계·집계·보존 경로만 하나 더 늘어납니다.</div>
       </div>
     </div>
-    <div class="cols c3" style="margin-top:34px">
+    <div class="cols" style="grid-template-columns:1fr 1.25fr 1fr;margin-top:34px">
       <div class="card"><div class="h3" style="font-size:26px">D1 운영 현황</div>
-        <div class="bd sm">지금 회차가 어떻게 돌고 있나. 초과발급 · 응답 6분류 rate · 대기열 길이 · 상태 전이 rate</div></div>
+        <div class="bd sm">지금 회차가 어떻게 돌고 있나. 초과발급, 응답 6분류 rate, 대기열 길이, 상태 전이 rate</div></div>
       <div class="card"><div class="h3" style="font-size:26px">D2 시스템 관제</div>
-        <div class="bd sm">서버가 버티고 있나. p50/p95/p99 · in-flight · DB 풀 · Redis 지연 · Kafka 랙 · CB 3종</div></div>
+        <div class="bd sm">서버가 버티고 있나. p50/p95/p99, in-flight, DB 풀, Redis 지연, Kafka 랙, CB 3종</div></div>
       <div class="card acc"><div class="h3" style="font-size:26px">D3 분석 · 비교</div>
-        <div class="bd sm">완료 회차끼리 v1/v2/v3 를 맞대 본다. 공식 p95·p99·TPS · Redis↔DB 격차</div></div>
+        <div class="bd sm">완료 회차끼리 v1/v2/v3 를 맞대 본다. 공식 p95, p99, TPS 와 Redis↔DB 격차</div></div>
     </div>
   </div>
   <div class="a foot"><b>화면은 셋입니다</b> · <b>아직 못 메운 곳</b>. Redis series 는 900개를 넘으면 오래된 것부터 버립니다. MySQL 로 옮기는 주체가 아직 정해지지 않았습니다</div>
@@ -424,7 +420,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 07 판정 순서 ══════════════════════════════════════════ -->
 <div data-part="2" class="slide">
-  <div class="a mark">파트 II · 1</div>
   <div class="a ttl">판정은 로컬에서, 배분은 한 곳에서</div>
   <div class="a lede">게이트웨이 N대가 요청을 받지만 <b>크레딧 배분은 리더 한 대만</b> 합니다. N대가 각자 배분하면 총합이 뒷단 가용량을 넘어, 유입을 조절한다는 전제가 무너집니다.</div>
   <div class="accbar"></div>
@@ -459,7 +454,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 08 낡은 스냅샷 ════════════════════════════════════════ -->
 <div data-part="2" class="slide">
-  <div class="a mark">파트 II · 2</div>
   <div class="a ttl">스냅샷이 낡았다면, 누가 멎었는지부터 본다</div>
   <div class="a lede">증상은 똑같이 “판정 재료가 낡았다”지만, <b>첫째는 나 하나만 빠지면 되는 일</b>이고 <b>둘째는 아무도 빠지면 안 되는 일</b>입니다.</div>
   <div class="accbar"></div>
@@ -485,7 +479,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 09 회복 시험 ══════════════════════════════════════════ -->
 <div data-part="2" class="slide">
-  <div class="a mark">파트 II · 3</div>
   <div class="a ttl">장애가 아니라 회복을 시험한다</div>
   <div class="a lede">장애 대응은 시스템을 <b>다른 모드로 전환</b>합니다. 이 전환은 하나하나 정상으로 되돌아와야 하는데, <b>되돌아오는 순간이 가장 위험합니다.</b></div>
   <div class="accbar"></div>
@@ -516,7 +509,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 10 분리 + 계층 ════════════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a mark">파트 III · 결정 01 · 02</div>
   <div class="a ttl sm">판정을 발급 서버에서 떼어내고, 배치를 쓰기 대상으로 나눴다</div>
   <div class="a lede"><b>100장짜리가 101장 나가거나</b>, <b>한 사람이 두 장 받거나</b>, <b>취소한 쿠폰이 재고로 안 돌아오는</b> 일이 생길 수 있습니다. 발급건이 300만 건이라 사람이 찾아내는 건 불가능합니다.</div>
   <div class="accbar"></div>
@@ -528,7 +520,7 @@ td.dim,.dim{color:var(--ink3)}
                        │ 읽기 전용
                        │
               <b>검증 배치 서버</b>  <span class="acc">← 판정만. 원본에 쓰지 않는다</span>
-              전수 스캔 · 3축 대조 · 이력 재생</div>
+              전수 스캔, 3축 대조, 이력 재생</div>
         <div class="note" style="margin-top:26px">발급 서버에 배치로 붙이면 <b>부하 테스트와 검증이 같은 DB 를 써서</b> 성능 측정값이 흔들립니다. 파트 I 에서 관측 전용 DataSource 를 떼어낸 것과 같은 이유입니다.</div>
       </div>
       <div>
@@ -546,7 +538,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 11 배치 7종 ═══════════════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a mark">파트 III · 결정 03</div>
   <div class="a ttl">일곱 중 둘에만 Spring Batch 를 썼다</div>
   <div class="a lede">Spring Batch 는 잡이 돌 때마다 <b>실행 이력 테이블 네 개</b>에 기록을 쌓습니다. 그 DB 가 <b>검증 대상 DB 와 같습니다.</b> 열두 줄짜리 표를 읽는 작업에까지 붙이면 검증할 데이터에 배치 메타데이터 쓰기가 계속 섞입니다.</div>
   <div class="accbar"></div>
@@ -579,7 +570,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 12 이력 재계산 ════════════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a mark">파트 III · 결정 04</div>
   <div class="a ttl">상태 칸 대신 이력을 읽어 상태를 다시 계산한다</div>
   <div class="a lede">어떤 쿠폰의 상태 칸에 <b>사용됨</b>이라고 적혀 있어도 그 값이 맞다고 볼 수 없습니다. 코드 버그나 배치 중단으로 잘못 적혔을 수 있습니다. <b>검증이 그 값을 그대로 읽으면 틀린 데이터를 정상으로 판정합니다.</b></div>
   <div class="accbar"></div>
@@ -606,7 +596,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 13 오염 데이터 ════════════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a mark">파트 III · 결정 05</div>
   <div class="a ttl">검증기가 동작하는지를 오염 데이터로 확인한다</div>
   <div class="a lede">검증기가 아무것도 못 찾았을 때, <b>데이터가 깨끗해서인지 검증기가 동작을 안 해서인지</b> 구분할 수 없습니다.</div>
   <div class="accbar"></div>
@@ -629,7 +618,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 14 기준 시각 + 판정 ═══════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a mark">파트 III · 결정 06</div>
   <div class="a ttl sm">기준 시각을 고정하고, 불일치는 실패로 처리하지 않는다</div>
   <div class="a lede">검증이 도는 몇 분 동안에도 발급은 계속됩니다. 이대로 두면 <b>돌릴 때마다 결과가 달라져</b> 판정 근거로 쓸 수 없습니다. 기준 시각을 하나 정해 두고 그 시점 데이터만 읽습니다.</div>
   <div class="accbar"></div>
@@ -650,7 +638,6 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 15 인덱스 + 돌연변이 ══════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a mark">파트 III · 결정 07 · 08</div>
   <div class="a ttl sm">재보고 나서 넣는다 · 초록인 것과 지켜지는 것은 다르다</div>
   <div class="accbar"></div>
   <div class="body">
@@ -717,19 +704,19 @@ td.dim,.dim{color:var(--ink3)}
   <div class="accbar"></div>
   <div class="body">
     <div class="a">
-      <div class="cols c3">
-        <div class="card"><div class="h3">관제</div>
-          <div class="bd"><b>관측 경로를 나눠</b><br>측정 오염을 막았고</div></div>
-        <div class="card"><div class="h3">게이트웨이</div>
-          <div class="bd"><b>낡음의 원인을 나눠</b><br>대응을 갈랐고</div></div>
-        <div class="card acc"><div class="h3">검증</div>
-          <div class="bd"><b>배치 실패와 데이터 이상을 나눠</b><br>알람을 갈랐습니다</div></div>
+      <div class="cols" style="grid-template-columns:1fr 1fr 1.5fr">
+        <div class="card"><div class="h3" style="font-size:30px">관제</div>
+          <div class="bd">관측 경로를 나눠<br><b>측정 오염을 막았고</b></div></div>
+        <div class="card"><div class="h3" style="font-size:30px">게이트웨이</div>
+          <div class="bd">낡음의 원인을 나눠<br><b>대응을 갈랐고</b></div></div>
+        <div class="card acc"><div class="h3" style="font-size:38px">검증</div>
+          <div class="bd" style="font-size:23px">배치 실패와 데이터 이상을 나눠<br><b>알람을 갈랐습니다</b></div></div>
       </div>
       <div class="say" style="font-size:44px;text-align:center;margin-top:64px;line-height:1.35">
         그리고 셋 다 미리 넣지 않고,<br><span class="hl">재보고 나서 넣습니다.</span></div>
     </div>
   </div>
-  <div class="a foot"><b>4조 KAFKICK</b> &nbsp; 허건 · 박지훈 · 설승환 · 유희준 · 이경주 &nbsp;·&nbsp; 쿠폰 도메인 · 관제 · 적응형 대기열 게이트웨이 · 검증 배치 서버</div>
+  <div class="a foot"><b>4조 KAFKICK</b> &nbsp; 허건, 박지훈, 설승환, 유희준, 이경주 &nbsp;&nbsp; 쿠폰 도메인, 관제, 적응형 대기열 게이트웨이, 검증 배치 서버</div>
 </div>
 
 </div></div>
