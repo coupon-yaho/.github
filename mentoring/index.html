@@ -710,15 +710,15 @@ td.dim,.dim{color:var(--ink3)}
 <!-- 16 질문 표지 -->
 <div class="slide cover">
   <div class="a eyebrow">발표는 여기까지입니다</div>
-  <h1 class="a">여쭙고 싶은 것</h1>
-  <div class="a sub">관제 5, 검증 2, 설계 1<br>
+  <h1 class="a">Q&amp;A</h1>
+  <div class="a sub">관제 5, 검증 2, 설계 2<br>
     현장에서 실제로 어떻게 하시는지가 궁금합니다</div>
   <div class="a bars">
     <i style="width:420px;background:#2F7D82"></i>
-    <i style="width:120px;background:#C2566A"></i>
-    <i style="width:120px;background:#9A6A18"></i>
+    <i style="width:168px;background:#C2566A"></i>
+    <i style="width:168px;background:#9A6A18"></i>
   </div>
-  <div class="a who"><span><b>질문 8개</b></span><span>4조 KAFKICK</span></div>
+  <div class="a who"><span><b>질문 9개</b></span><span>4조 KAFKICK</span></div>
 </div>
 
 <!-- 02 Q1 -->
@@ -1009,10 +1009,44 @@ api-3  p99 = 210ms  ─┘     <span class="acc">(api-1 라벨 병기)</span>
   <div class="a foot">가상 회원 <b>100만 명</b> 중 지금 누가 요청하는지를 가려야 해서 나온 설계입니다</div>
 </div>
 
+<!-- 10 Q9 -->
+<div data-part="2" data-topic="설계" class="slide">
+  <div class="a mark">질문 9 · 설계</div>
+  <div class="a ttl sm">분산 내성을 높이려면 무엇부터 보시나요</div>
+  <div class="a lede">대용량이면 <b>스케일 아웃</b>부터 떠올렸는데, 막상 해보니 <b>노드가 늘어난 것 자체가 정합성 위협</b>이 되었습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="say" style="font-size:26px;margin-bottom:18px">늘리자 <span class="hl">셋</span>이 따라왔습니다</div>
+        <div class="ladder">
+          <div class="rung"><span class="i">1</span><span><b>노드 수가 분모</b>에 들어간다</span><span class="c">총합 초과</span></div>
+          <div class="rung"><span class="i">2</span><span><b>상태 전파</b>가 한 틱 늦는다</span><span class="c">낡은 판정</span></div>
+          <div class="rung"><span class="i">3</span><span>새 노드가 <b>제 능력을 과대 보고</b>한다</span><span class="c">뜨자마자 과부하</span></div>
+        </div>
+        <div class="note" style="margin-top:22px">직렬화가 필요한 지점 셋 — <b>1인 1매 · 재고 차감 · 크레딧 배분</b> — 은
+          노드를 늘려도 <b>끝까지 나뉘지 않았습니다.</b></div>
+      </div>
+      <div>
+        <div class="card acc">
+          <div class="h3" style="font-size:30px">묻고 싶은 것</div>
+          <div class="bd">분산 내성을 높이는 설계에서 <b>가장 먼저 봐야 할 것</b>이 무엇인지,
+            현장의 판단 축을 듣고 싶습니다.</div>
+          <div class="lab">저희가 잡은 축</div>
+          <div class="bd sm"><b>늦어도 되는 값과 안 되는 값을 나눈다.</b> 그래서 재고 차감과 1인 1매는
+            게이트웨이에서 판단하지 않고 뒷단으로 넘겼습니다. <b>이 축이 맞는지 봐주셨으면 합니다.</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">스케일 아웃은 <b>무상태 계층에서만 쌌습니다.</b> 상태가 끼는 순간, 일관성 문제를 푸는 게 아니라 만들어냈습니다</div>
+
 </div></div>
 
 <div class="pg" id="pg"></div>
-<div class="rail" id="rail"></div>
+<div class="rail" id="rail">
+</div>
+</div>
 <div class="ctl">
   <button class="nav" id="prev" type="button" aria-label="이전">‹</button>
   <button class="nav" id="next" type="button" aria-label="다음">›</button>
