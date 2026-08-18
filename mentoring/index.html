@@ -173,7 +173,7 @@ td.dim,.dim{color:var(--ink3)}
 .rung{display:grid;grid-template-columns:52px 1fr auto;gap:18px;align-items:baseline;
       padding:10px 8px;border-bottom:1px solid var(--rule2);font-size:22px}
 .rung .i{font-size:17px;color:var(--ink3);font-weight:700;font-variant-numeric:tabular-nums}
-.rung .c{font-size:19px;color:var(--ink3)}
+.rung .c{font-size:19px;color:var(--ink3);white-space:nowrap}
 .rung.hi{background:var(--acc-bg)}
 /* 입장 판정 사다리 — 조건 옆에 평문 설명을 붙인다.
    조건식만 세우면 붙여 읽었을 때 그냥 문자열이 된다. */
@@ -707,6 +707,308 @@ td.dim,.dim{color:var(--ink3)}
   <div class="a foot"><b>4조 KAFKICK</b> &nbsp; 허건, 박지훈, 설승환, 유희준, 이경주 &nbsp;&nbsp; 쿠폰 도메인, 관제, 적응형 대기열 게이트웨이, 검증 배치 서버</div>
 </div>
 
+<!-- 16 질문 표지 -->
+<div class="slide cover">
+  <div class="a eyebrow">발표는 여기까지입니다</div>
+  <h1 class="a">여쭙고 싶은 것</h1>
+  <div class="a sub">관제 5, 검증 2, 설계 1<br>
+    현장에서 실제로 어떻게 하시는지가 궁금합니다</div>
+  <div class="a bars">
+    <i style="width:420px;background:#2F7D82"></i>
+    <i style="width:120px;background:#C2566A"></i>
+    <i style="width:120px;background:#9A6A18"></i>
+  </div>
+  <div class="a who"><span><b>질문 8개</b></span><span>4조 KAFKICK</span></div>
+</div>
+
+<!-- 02 Q1 -->
+<div data-part="1" data-topic="관제" class="slide">
+  <div class="a mark">질문 1 · 관제</div>
+  <div class="a ttl">장애를 잡아낸 경험에서<br>가장 먼저 보는 지표 3개</div>
+  <div class="a lede">저희 대시보드에 그 셋이 <b>눈에 띄는 자리</b>에 있는지 확인하고 싶습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="say" style="font-size:28px;margin-bottom:20px">지금 저희 화면은 <span class="hl">셋</span>입니다</div>
+        <div class="ladder">
+          <div class="rung"><span class="i">D1</span><span>운영 현황</span><span class="c">회차 진행</span></div>
+          <div class="rung"><span class="i">D2</span><span>시스템 관제</span><span class="c">서버 상태</span></div>
+          <div class="rung"><span class="i">D3</span><span>분석 · 비교</span><span class="c">버전 비교</span></div>
+        </div>
+        <div class="note" style="margin-top:26px">화면은 <b>누가 보느냐</b>로 나눴습니다. 그런데 장애 순간에 필요한 것은
+          화면 단위가 아니라 <b>지표 세 개</b>일 것 같습니다.</div>
+      </div>
+      <div>
+        <div class="card acc">
+          <div class="h3" style="font-size:30px">묻고 싶은 것</div>
+          <div class="bd">실제로 장애를 잡아내셨을 때 <b>가장 먼저 본 지표</b>가 무엇이었는지,
+            그리고 <b>어떤 순서</b>로 보셨는지 듣고 싶습니다.</div>
+          <div class="lab">그걸로 하려는 것</div>
+          <div class="bd sm">그 셋을 D2 최상단에 고정 배치하고, 나머지는 접겠습니다.
+            지금은 지표가 평평하게 나열돼 있어서 <b>무엇부터 볼지가 화면에 안 담겨 있습니다.</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">저희 가정은 <b>초과발급 → p99 → CB 상태</b> 순인데, 현장 기준과 다르면 그쪽을 따르겠습니다</div>
+</div>
+
+<!-- 03 Q2 -->
+<div data-part="1" data-topic="관제" class="slide">
+  <div class="a mark">질문 2 · 관제</div>
+  <div class="a ttl">빠진 지표와, 안 봐도 되는 지표</div>
+  <div class="a lede">지금 보고 있는 것을 전부 펼쳐 두겠습니다. <b>여기 없는데 반드시 보시는 것</b>과
+    <b>있는데 안 봐도 되는 것</b>을 짚어주시면 좋겠습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a">
+      <table style="font-size:20px">
+        <thead><tr><th style="width:150px">묶음</th><th>지금 보는 것</th></tr></thead>
+        <tbody>
+          <tr class="hi"><td><b>정합성</b></td><td>초과발급 · Redis↔DB 격차 · 상태 전이 rate</td></tr>
+          <tr><td><b>응답</b></td><td>응답 결과 6분류 rate · p50 / p95 / p99 · in-flight</td></tr>
+          <tr><td><b>의존성</b></td><td>DB 풀 사용률과 대기수 · Redis 지연 · Kafka 랙 · Circuit Breaker 3종</td></tr>
+          <tr><td><b>대기열</b></td><td>대기열 길이</td></tr>
+          <tr><td><b>자원</b></td><td>CPU · heap · thread</td></tr>
+        </tbody>
+      </table>
+      <div class="cols c2" style="gap:52px;margin-top:36px">
+        <div class="card">
+          <div class="h3" style="font-size:28px">빠졌을까 의심하는 것</div>
+          <div class="bd sm">에러 예산이나 SLO 위반율 같은 <b>집계된 판정 지표</b>가 없습니다.
+            개별 지표만 있어서 "지금 나쁜 상태인가"를 사람이 조합해야 합니다.
+            GC 일시정지 시간, 커넥션 획득 대기 시간도 안 보고 있습니다.</div>
+        </div>
+        <div class="card acc">
+          <div class="h3" style="font-size:28px">뺄까 고민하는 것</div>
+          <div class="bd sm">CPU · heap · thread 는 2 vCPU 단일 노드라 거의 항상 붙어 있습니다.
+            <b>화면 자리만 차지하고 판단에는 안 쓰이는 것 같은데</b>, 그래도 두는 게 맞을지 궁금합니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- A1 -->
+<div data-part="1" data-topic="관제" class="slide">
+  <div class="a mark">질문 3 · 관제</div>
+  <div class="a ttl">직접 만든 게 맞을까요,<br>Prometheus 를 쓰는 게 답일까요</div>
+  <div class="a lede">회차별 성능 비교가 목적이라 지표 수집을 직접 만들었습니다. 그런데
+    <b>그냥 Prometheus + Grafana 쓰고 회차는 라벨로 처리해라</b> 가 실무의 답이라면 지금 돌리는 게 낫겠습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="say" style="font-size:26px;margin-bottom:18px">직접 만든 <span class="hl">이유</span></div>
+        <div class="ladder" style="font-size:20px">
+          <div class="rung" style="padding:8px"><span class="i">1</span><span>원천이 이미 셋으로 나뉘어 있다</span><span class="c">원천 3종</span></div>
+          <div class="rung" style="padding:8px"><span class="i">2</span><span>수집기가 저장이 아니라 판정을 한다</span><span class="c">버전별로 다름</span></div>
+          <div class="rung hi" style="padding:8px"><span class="i">3</span><span>병행하면 판정이 두 경로에 생긴다</span><span class="c">결정적</span></div>
+        </div>
+        <table style="margin-top:22px;font-size:19px">
+          <tbody>
+            <tr><td class="n"><b>v1</b></td><td>Redis 지표가 없다</td><td><span class="tag wait">N/A</span></td></tr>
+            <tr><td class="n"><b>v2</b></td><td>Redis ↔ DB 격차</td><td><span class="tag block">오류</span></td></tr>
+            <tr><td class="n"><b>v3</b></td><td>Kafka 랙이 쌓인다</td><td><span class="tag pass">정상</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card acc">
+          <div class="h3" style="font-size:30px">특히 듣고 싶은 것</div>
+          <div class="bd">직접 만들었을 때 <b>나중에 후회하는 지점</b>이 어디인지 궁금합니다.
+            지금은 잘 도는 것 같은데, 실무에서 이 선택이 부메랑으로 돌아오는 자리가 있을 것 같습니다.</div>
+          <div class="lab">저희가 짐작하는 것</div>
+          <div class="bd sm">보존 기간과 다운샘플링을 직접 짜야 하는 것,
+            그리고 지표를 하나 추가할 때마다 수집·저장·조회 세 군데를 손봐야 하는 것.
+            이것 말고 더 큰 게 있는지요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">되돌릴 거면 지금이 마지막 시점이라 여쭙습니다. 대시보드가 붙기 시작하면 옮기기 어려워집니다</div>
+</div>
+
+<!-- A2 -->
+<div data-part="1" data-topic="관제" class="slide">
+  <div class="a mark">질문 4 · 관제</div>
+  <div class="a ttl">Redis 에 쌓은 것을 언제 MySQL 로 옮기나요</div>
+  <div class="a lede">1초 간격 시계열을 Redis 에 버퍼로 쌓고 회차가 끝나면 MySQL 로 옮깁니다.
+    <b>옮기는 시점</b>을 어디로 잡는 게 맞을지 판단이 안 섭니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a">
+      <div class="cols c2" style="gap:52px">
+        <div class="card">
+          <div class="h3" style="font-size:30px">회차 종료 시 일괄</div>
+          <div class="bd">지금 방식입니다. 측정 구간에 쓰기가 없어서 <b>측정을 오염시키지 않습니다.</b></div>
+          <div class="lab">걸리는 점</div>
+          <div class="bd sm">회차가 끝나기 전에 프로세스가 죽으면 그 회차 시계열이 통째로 사라집니다.
+            Redis 는 <code>everysec</code> 라 <code>kill -9</code> 에 최대 1초가 더 날아갑니다.</div>
+        </div>
+        <div class="card acc">
+          <div class="h3" style="font-size:30px">측정 중 주기적 drain</div>
+          <div class="bd">죽어도 그 시점까지는 남습니다.</div>
+          <div class="lab">걸리는 점</div>
+          <div class="bd sm">측정 구간 안에서 MySQL 쓰기가 계속 발생합니다.
+            관제가 측정에 영향을 주지 않게 하려고 앞에서 공들여 떼어낸 것과 <b>정면으로 부딪칩니다.</b></div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:34px">특히 <b>Chaos 테스트에서 프로세스를 일부러 죽이는</b> 시나리오가 걸립니다.
+        그때 측정값이 사라지면 회복 검증 자체를 못 합니다. 그런데 그걸 살리려고 drain 을 켜면
+        측정 조건이 달라져서 v1·v2·v3 비교가 흔들립니다.</div>
+    </div>
+  </div>
+  <div class="a foot">실무에서는 이 둘 중 어느 쪽을 기본으로 두시는지, 아니면 제3의 방식이 있는지 궁금합니다</div>
+</div>
+
+<!-- D1 -->
+<div data-part="1" data-topic="관제" class="slide">
+  <div class="a mark">질문 5 · 관제</div>
+  <div class="a ttl">앱이 N대일 때 p99 를 어떻게 합치나요</div>
+  <div class="a lede">인스턴스마다 자기 히스토그램을 들고 있어서, 전체 p99 를 내려면 합쳐야 합니다.
+    지금은 <b>인스턴스 최댓값에 라벨을 붙여</b> 표시하는 타협을 쓰고 있습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="flow" style="font-size:18px">api-1  p99 = 240ms  ─┐
+api-2  p99 = 180ms  ─┼─▶  <b>표시값 240ms</b>
+api-3  p99 = 210ms  ─┘     <span class="acc">(api-1 라벨 병기)</span>
+
+실제 전체 p99 는 이 셋의
+최댓값이 아니라 <b>분포를 합친 값</b>이다</div>
+        <div class="note" style="margin-top:26px">최댓값은 <b>실제 p99 보다 항상 크거나 같습니다.</b>
+          보수적인 쪽으로 틀리는 것이라 운영 알람용으로는 괜찮다고 봤습니다.</div>
+      </div>
+      <div>
+        <div class="card acc">
+          <div class="h3" style="font-size:28px">여쭙고 싶은 것</div>
+          <div class="bd">이 타협이 <b>받아들일 만한지</b>, 아니면 히스토그램 병합을
+            <b>반드시 해야 하는 상황</b>이 따로 있는지 궁금합니다.</div>
+          <div class="lab">저희가 걱정하는 경우</div>
+          <div class="bd sm">한 인스턴스에만 트래픽이 몰리면 그 인스턴스의 p99 가 전체를 대표하지 못합니다.
+            v1·v2·v3 <b>비교 수치로 쓸 때</b>도 최댓값이면 왜곡이 생길 것 같은데,
+            공식 수치는 부하 생성기 원본 표본에서 뽑고 있어서 괜찮을지 판단이 안 섭니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">공식 p95·p99·TPS 는 <b>부하 생성기 원본 표본</b>이 원천이고, 이 화면 값은 실시간 관제용입니다</div>
+</div>
+
+<!-- 04 Q3 -->
+<div data-part="3" data-topic="검증" class="slide">
+  <div class="a mark">질문 6 · 검증</div>
+  <div class="a ttl">정합성 검증을 실시간으로 갈 수 있을까요</div>
+  <div class="a lede">결제 시스템에서 원장을 실시간으로 대사(Reconciliation)하듯,
+    쿠폰 재고와 발급 이력도 <b>배치가 아니라 실시간</b>으로 맞춰볼 수 있는지 궁금합니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="say" style="font-size:28px;margin-bottom:18px">지금은 <span class="hl">전수 배치</span>입니다</div>
+        <div class="ladder">
+          <div class="rung"><span class="i">주기</span><span>온디맨드 또는 10분</span><span class="c">Spring Batch</span></div>
+          <div class="rung"><span class="i">범위</span><span>발급 300만 · 이력 534만 전수</span><span class="c">읽기 전용</span></div>
+          <div class="rung"><span class="i">기준</span><span>asOf 시각 고정</span><span class="c">재실행 재현</span></div>
+          <div class="rung hi"><span class="i">한계</span><span>최대 10분 늦게 안다</span><span class="c">사후 확인</span></div>
+        </div>
+        <div class="note" style="margin-top:24px">지금 구조는 <b>틀린 것을 나중에 찾아내는</b> 쪽입니다.
+          실시간이면 <b>틀리는 순간 막을</b> 수 있을 텐데, 그 대가가 무엇인지 감이 안 잡힙니다.</div>
+      </div>
+      <div>
+        <div class="card acc">
+          <div class="h3" style="font-size:30px">막히는 지점</div>
+          <div class="bd">전수 검증의 근거가 <b>기준 시각 고정</b>입니다. 그 시점 데이터만 읽어야
+            돌릴 때마다 같은 결과가 나옵니다. 그런데 실시간은 계속 변하는 데이터를 봐야 해서
+            <b>이 전제와 정면으로 부딪칩니다.</b></div>
+          <div class="lab">여쭙고 싶은 것</div>
+          <div class="bd sm">결제 원장 대사에서는 이걸 어떻게 푸시는지 궁금합니다.
+            변경분만 보는 증분 대사인지, 아니면 실시간은 <b>탐지</b>만 하고
+            판정은 여전히 배치가 맡는 구조인지요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">부하 측정과 같은 DB 를 쓰면 측정값이 흔들려서, 검증은 지금 <b>별도 서버에서 읽기 전용</b>으로 돕니다</div>
+</div>
+
+<!-- 질문 7 검증 -->
+<div data-topic="검증" data-part="3" class="slide">
+  <div class="a mark">질문 7 · 검증</div>
+  <div class="a ttl">데이터가 틀렸는데<br>아무 알람도 안 울리면 어떡하죠</div>
+  <div class="a lede">데이터가 틀렸다는 판정이 나와도 <b>배치는 정상 종료</b>로 처리했습니다.
+    판정을 냈으니 배치는 제 일을 한 거라고 봤습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <table style="font-size:20px">
+          <thead><tr><th style="width:56px"></th><th>결과</th><th>배치</th></tr></thead>
+          <tbody>
+            <tr><td class="n"><b>A</b></td><td>전수 완료 · 위반 0건</td><td><span class="tag pass">성공</span></td></tr>
+            <tr class="hi"><td class="n"><b>B</b></td><td>전수 완료 · <b>위반 N건</b></td><td><span class="tag pass">성공</span></td></tr>
+            <tr><td class="n"><b>C</b></td><td>판정을 내지 못함</td><td><span class="tag block">실패</span></td></tr>
+          </tbody>
+        </table>
+        <div class="note" style="margin-top:26px">서버를 고쳐야 할 상황(C)과 데이터를 봐야 할 상황(B)은
+          <b>대응하는 사람도 방법도 다릅니다.</b> 그래서 판정을 나눴습니다.</div>
+      </div>
+      <div>
+        <div class="card acc">
+          <div class="h3" style="font-size:30px">그런데 막힙니다</div>
+          <div class="bd">운영 알람은 보통 <b>배치가 실패했는지</b>를 봅니다.
+            그러면 B는 배치가 성공이라서 <b>아무 알람도 안 울립니다.</b>
+            데이터가 틀렸는데 아무도 모르는 상태가 됩니다.</div>
+          <div class="lab">여쭙고 싶은 것</div>
+          <div class="bd sm">실무에서는 이 둘을 어떻게 나눠서 알리시는지 궁금합니다.
+            배치 실패와 별개로 <b>데이터 이상용 알람 채널</b>을 따로 두시는지,
+            아니면 위반 건수를 지표로 내보내고 임계치로 거시는지요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">지금은 판정만 기록에 남기고 있습니다. <b>누구에게 어떻게 알릴지는 아직 안 정했습니다</b></div>
+</div>
+
+<!-- 05 Q4 -->
+<div data-part="2" data-topic="설계" class="slide">
+  <div class="a mark">질문 8 · 설계</div>
+  <div class="a ttl">헤더로 사용자를 구분하는 것,<br>어디까지 괜찮을까요</div>
+  <div class="a lede">회원가입과 로그인이 과제 범위 밖이라 <b>회원 ID 와 등급을 요청 헤더로</b> 받습니다.
+    인증이 아니라 사용자 구분 수단인데, 위조가 자유롭다는 점이 계속 걸립니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="say" style="font-size:26px;margin-bottom:18px">저희가 <span class="hl">일부러 안 한 것</span></div>
+        <div class="ladder" style="font-size:20px">
+          <div class="rung" style="padding:8px"><span class="i">1</span><span>JWT · 세션 · OAuth</span><span class="c">범위 밖</span></div>
+          <div class="rung" style="padding:8px"><span class="i">2</span><span>헤더 서명</span><span class="c">키 관리 발생</span></div>
+          <div class="rung" style="padding:8px"><span class="i">3</span><span>인증 필터</span><span class="c">막을 대상이 없음</span></div>
+        </div>
+        <div class="note" style="margin-top:22px">서명 없는 역할 클레임은 <b>방어가 아니라 장식</b>이라고 보고 넣지 않았습니다.
+          관리 경로는 <b>관리 포트를 외부에 노출하지 않는 것</b>으로 막고 있습니다.</div>
+      </div>
+      <div>
+        <div class="card acc">
+          <div class="h3" style="font-size:28px">그래서 지키는 선</div>
+          <div class="bd sm">서명이 없으니 <b>서버측 자격 검사가 유일한 방어선</b>입니다.
+            헤더 등급을 회차의 허용 등급과 대조하고,
+            헤더 회원 ID 로 남의 쿠폰을 다룰 수 없게 막습니다.</div>
+          <div class="lab">여쭙고 싶은 것</div>
+          <div class="bd sm">이 정도로 <b>선을 그은 게 타당한지</b>,
+            아니면 부하 테스트에 부담이 안 되는 선에서
+            최소한의 무언가를 붙이는 게 맞는지 판단을 듣고 싶습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">가상 회원 <b>100만 명</b> 중 지금 누가 요청하는지를 가려야 해서 나온 설계입니다</div>
+</div>
+
 </div></div>
 
 <div class="pg" id="pg"></div>
@@ -795,9 +1097,11 @@ td.dim,.dim{color:var(--ink3)}
     idx = i;
     $("#prev").disabled = idx===0;
     $("#next").disabled = idx===N-1;
-    var p = PART[slides[i].dataset.part];
+    var s = slides[i], p = PART[s.dataset.part];
+    // 질문 장은 파트가 아니라 어느 주제에 대한 질문인지를 띄운다.
+    var label = s.dataset.topic ? "질문 · " + s.dataset.topic : (p ? p[0] : "");
     pg.innerHTML = "<b>" + (idx+1) + "</b> / " + N
-                 + (p ? " <s style='color:"+p[1]+"'>"+p[0]+"</s>" : "");
+                 + (label ? " <s style='color:" + (p ? p[1] : "#8B93A3") + "'>" + label + "</s>" : "");
     if(location.hash !== "#"+(idx+1)) history.replaceState(null, "", "#"+(idx+1));
   }
 
