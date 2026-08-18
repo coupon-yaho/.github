@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>검증 배치 서버 · 4조 KAFKICK</title>
+<link rel="preload" href="../assets/fonts/pretendard-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/pretendard-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/pretendard-400.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* 레포에 실린 Pretendard 서브셋을 직접 싣는다. 발표 PC 에 Pretendard 가
+   없어도 대체 폰트로 떨어지지 않아 글자 폭과 줄바꿈이 그대로 유지된다. */
+@font-face{font-family:'Pretendard';font-style:normal;font-weight:400;font-display:swap;
+  src:url('../assets/fonts/pretendard-400.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-style:normal;font-weight:700;font-display:swap;
+  src:url('../assets/fonts/pretendard-700.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-style:normal;font-weight:800;font-display:swap;
+  src:url('../assets/fonts/pretendard-800.woff2') format('woff2')}
+</style>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   설계 캔버스 1920 × 1080. 화면 크기에 맞춰 통째로 스케일한다.
+   좌표가 아니라 grid/flex 흐름으로 짠다. 발표 PC 의 폰트가 달라도
+   한 줄이 두 줄이 될 뿐 레이아웃이 무너지지 않는다.
+   여백 88 · 거터 32
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --ink:#152349;      /* 제목 · 본문 */
+  --ink2:#3E4B68;     /* 부연 */
+  --ink3:#6B7690;     /* 라벨 · 각주 */
+  --faint:#D9D4C9;    /* 큰 번호 */
+  --rule:#152349;
+  --rule2:#DFDAD0;
+  --acc:#C2566A;      /* 액센트 */
+  --acc-bg:#F9EDEF;
+  --pass:#2E7D52;  --pass-bg:#E6F2EB;
+  --wait:#96590F;  --wait-bg:#F7EEDF;
+  --block:#A5382A; --block-bg:#F7E6E3;
+  --surface:#FBFAF7;
+  --bg:#FFFFFF;
+  --sans:Pretendard,"Pretendard Variable","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#20242B;overflow:hidden}
+body{font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+div,span,h1,h2,p,td,th,li{word-break:keep-all}
+
+.frame{position:fixed;inset:0;display:grid;place-items:center}
+.stage{width:1920px;height:1080px;position:relative;transform-origin:center center;flex:none}
+
+.slide{
+  position:absolute;inset:0;background:var(--bg);color:var(--ink);
+  padding:74px 88px 88px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transition:opacity .34s ease;
+}
+.slide.on{opacity:1;visibility:visible}
+
+/* ── 진입 모션 : 위에서부터 차례로 ──────────────────────────
+   모션은 장식이지 표시 수단이 아니다. 애니메이션이 안 도는 환경
+   (백그라운드 탭 · 저전력 · 화면 녹화 · 일부 웹뷰)에서 opacity:0 에
+   갇히면 슬라이드가 통째로 빈다. 그래서 JS 가 슬라이드를 띄운 뒤
+   .shown 을 걸어 무조건 보이게 만든다. 아래 실패 안전장치. */
+.a{opacity:0;transform:translateY(14px)}
+.slide.shown .a{opacity:1;transform:none;animation:none}
+.slide.on .a{animation:rise .52s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.slide.on .a:nth-child(1){animation-delay:.02s}
+.slide.on .a:nth-child(2){animation-delay:.07s}
+.slide.on .a:nth-child(3){animation-delay:.12s}
+.slide.on .a:nth-child(4){animation-delay:.17s}
+.slide.on .a:nth-child(5){animation-delay:.22s}
+.slide.on .a:nth-child(6){animation-delay:.27s}
+.slide.on .a:nth-child(7){animation-delay:.32s}
+@media (prefers-reduced-motion:reduce){
+  .a{opacity:1;transform:none}
+  .slide.on .a{animation:none}
+}
+
+/* ── 파트별 색 리듬 ──────────────────────────────────────────
+   네 파트가 40분 가까이 이어진다. 같은 색으로만 가면 청중이 지금
+   어디인지 놓친다. 파트마다 색을 하나씩 주되, 오늘의 본론인
+   파트 III 에만 주 액센트를 써서 거기가 도착점임을 드러낸다. */
+.slide[data-part="0"]  {--part:#5B6B8C; --part-bg:#EEF0F5}
+.slide[data-part="1"]  {--part:#2F7D82; --part-bg:#E6F1F1}
+.slide[data-part="2"]  {--part:#9A6A18; --part-bg:#F7EFE0}
+.slide[data-part="3"]  {--part:#C2566A; --part-bg:#F9EDEF}
+.slide                 {--part:var(--acc); --part-bg:var(--acc-bg)}
+.slide .accbar{background:var(--part)}
+.slide .card.acc{border-top-color:var(--part)}
+.slide .card.acc .h3{color:var(--part)}
+.slide .say .hl{color:var(--part)}
+.slide .note{border-left-color:var(--part)}
+.slide tbody tr.hi td{background:var(--part-bg)}
+.slide .rung.hi{background:var(--part-bg)}
+.slide .rung.hi .i{color:var(--part)}
+.slide .tag.acc{background:var(--part-bg);color:var(--part)}
+.slide .metric .v.acc{color:var(--part)}
+.slide .flow .acc{color:var(--part)}
+.slide .toc .pn{color:var(--part)}
+
+/* ── 타이포 롤 ────────────────────────────────────────────── */
+.mark{font-size:18px;font-weight:700;color:var(--ink3);letter-spacing:.03em;flex:none;
+      display:flex;align-items:center;gap:12px}
+.mark::before{content:"";width:22px;height:3px;background:var(--part);flex:none;border-radius:2px}
+.mark b{color:var(--part);font-weight:800}
+.ttl{font-size:62px;font-weight:800;letter-spacing:-.035em;line-height:1.16;margin-top:12px;flex:none}
+.ttl.sm{font-size:52px}
+.lede{font-size:26px;color:var(--ink2);line-height:1.55;margin-top:20px;max-width:1500px;flex:none}
+.lede b{color:var(--ink);font-weight:700}
+.accbar{width:76px;height:5px;background:var(--acc);margin-top:26px;flex:none;transform-origin:left}
+.slide.on .accbar{animation:grow .5s .1s cubic-bezier(.2,.7,.3,1) both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:8px 0}
+.foot{font-size:19px;color:var(--ink3);line-height:1.5;flex:none;padding-top:16px;border-top:1px solid var(--rule2)}
+.foot b{color:var(--ink2);font-weight:700}
+.say{font-size:34px;font-weight:700;line-height:1.4;letter-spacing:-.02em}
+.say .hl{color:var(--acc)}
+code,.m{font-family:var(--mono);font-size:.9em;background:var(--surface);border:1px solid var(--rule2);border-radius:5px;padding:.08em .34em}
+
+/* ── 3열 / 2열 카드 ───────────────────────────────────────── */
+.cols{display:grid;gap:32px;align-items:start}
+.c2{grid-template-columns:repeat(2,1fr)}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c4{grid-template-columns:repeat(4,1fr)}
+.card{border-top:3px solid var(--rule);padding-top:20px;display:flex;flex-direction:column;gap:10px}
+.card.acc{border-top-color:var(--acc)}
+.card .num{font-size:42px;font-weight:800;color:var(--faint);line-height:1;letter-spacing:-.03em}
+.card .h3{font-size:34px;font-weight:800;letter-spacing:-.025em;line-height:1.25}
+.card.acc .h3{color:var(--acc)}
+.card .bd{font-size:21px;color:var(--ink2);line-height:1.6}
+.card .lab{font-size:16px;font-weight:700;color:var(--ink3);letter-spacing:.06em;margin-top:8px;padding-top:12px;border-top:1px solid var(--rule2)}
+.card .bd.sm{font-size:19px}
+
+/* ── 표 ───────────────────────────────────────────────────── */
+table{border-collapse:collapse;width:100%;font-size:21px}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--rule2);vertical-align:top;line-height:1.45}
+th{font-size:16px;letter-spacing:.08em;color:var(--ink3);font-weight:700;border-bottom:2px solid var(--rule);white-space:nowrap}
+td b{font-weight:700}
+tbody tr:last-child td{border-bottom:none}
+tbody tr.hi td{background:var(--acc-bg)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+td.dim,.dim{color:var(--ink3)}
+
+/* ── 상태 태그 ────────────────────────────────────────────── */
+.tag{display:inline-block;font-size:15px;font-weight:700;letter-spacing:.02em;padding:4px 11px;border-radius:999px;white-space:nowrap}
+.tag.pass{background:var(--pass-bg);color:var(--pass)}
+.tag.wait{background:var(--wait-bg);color:var(--wait)}
+.tag.block{background:var(--block-bg);color:var(--block)}
+.tag.acc{background:var(--acc-bg);color:var(--acc)}
+
+/* ── 큰 숫자 지표 ─────────────────────────────────────────── */
+.metrics{display:grid;gap:0;grid-auto-flow:column;grid-auto-columns:1fr;border-top:3px solid var(--rule)}
+.metric{padding:22px 26px 4px;border-right:1px solid var(--rule2)}
+.metric:last-child{border-right:none}
+.metric .v{font-size:64px;font-weight:800;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.metric .v.acc{color:var(--acc)}
+.metric .v.pass{color:var(--pass)}
+.metric .l{font-size:19px;color:var(--ink3);margin-top:10px;line-height:1.45}
+
+/* ── 사다리(번호 목록) ────────────────────────────────────── */
+.ladder{border-top:3px solid var(--rule)}
+.rung{display:grid;grid-template-columns:52px 1fr auto;gap:18px;align-items:baseline;
+      padding:10px 8px;border-bottom:1px solid var(--rule2);font-size:22px}
+.rung .i{font-size:17px;color:var(--ink3);font-weight:700;font-variant-numeric:tabular-nums}
+.rung .c{font-size:19px;color:var(--ink3)}
+.rung.hi{background:var(--acc-bg)}
+.rung.hi .i{color:var(--acc)}
+.split{padding:8px 10px;background:var(--surface);color:var(--ink3);font-size:16px;font-weight:700;letter-spacing:.1em;border-bottom:1px solid var(--rule2)}
+
+/* ── 모노스페이스 흐름도 ──────────────────────────────────── */
+.flow{font-family:var(--mono);font-size:19px;line-height:1.62;background:var(--surface);
+      border:1px solid var(--rule2);border-radius:10px;padding:24px 28px;color:var(--ink2);
+      white-space:pre;overflow:hidden}
+.flow b{color:var(--ink);font-weight:700}
+.flow .acc{color:var(--acc);font-weight:700}
+
+/* ── 인용/노트 ────────────────────────────────────────────── */
+.note{border-left:4px solid var(--acc);background:var(--surface);padding:18px 24px;font-size:22px;color:var(--ink2);line-height:1.55;border-radius:0 8px 8px 0}
+.note b{color:var(--ink);font-weight:700}
+
+/* ── 표지 / 마무리 ──────────────────────────────────────────
+   네 파트의 색을 표지에 띠로 깔아 목차보다 먼저 구조를 보여준다. */
+.cover{justify-content:center;gap:0;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-160px;top:-160px;width:620px;height:620px;
+  border-radius:50%;background:radial-gradient(circle at 30% 30%,#F9EDEF 0%,#FBFAF7 55%,transparent 72%);z-index:0}
+.cover > *{position:relative;z-index:1}
+.cover .eyebrow{font-size:21px;font-weight:700;color:var(--ink3);letter-spacing:.06em}
+.cover h1{font-size:112px;font-weight:800;letter-spacing:-.05em;line-height:1.04;margin-top:20px}
+.cover .sub{font-size:29px;color:var(--ink2);margin-top:24px;line-height:1.5}
+.cover .bars{display:flex;gap:8px;margin-top:44px}
+.cover .bars i{height:7px;border-radius:3px;display:block}
+.cover .who{margin-top:44px;padding-top:26px;border-top:2px solid var(--rule);font-size:22px;
+  color:var(--ink2);display:flex;gap:48px;flex-wrap:wrap;align-items:baseline}
+.cover .who b{color:var(--ink);font-weight:700}
+
+/* ── 목차 ─────────────────────────────────────────────────── */
+.toc{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 44px}
+.toc .it{display:grid;grid-template-columns:112px 1fr;gap:20px;align-items:baseline;
+         border-top:2px solid var(--rule);padding-top:16px}
+.toc .pn{font-size:19px;font-weight:800;color:var(--acc);letter-spacing:.04em}
+.toc .tt{font-size:31px;font-weight:800;letter-spacing:-.025em;line-height:1.25}
+.toc .dd{font-size:19px;color:var(--ink3);margin-top:7px;line-height:1.5}
+
+/* ── 조작부 ───────────────────────────────────────────────── */
+.rail{position:fixed;left:0;right:0;bottom:16px;display:flex;justify-content:center;gap:7px;z-index:9}
+.pip{--c:#6C7480;width:9px;height:9px;border-radius:50%;border:none;background:#454C57;
+     cursor:pointer;padding:0;transition:width .22s ease,background .22s ease}
+.pip:hover{background:var(--c);opacity:.7}
+.pip[data-on="1"]{background:var(--c);width:30px;border-radius:5px;opacity:1}
+.ctl{position:fixed;right:22px;bottom:34px;display:flex;gap:8px;z-index:9}
+.nav,.ib{width:40px;height:40px;border:1px solid #454C57;background:#2A2F37;color:#C9CED6;
+         border-radius:8px;cursor:pointer;font-size:16px;line-height:1;display:grid;place-items:center}
+.nav:hover,.ib:hover{background:#39404A;color:#fff}
+.nav[disabled]{opacity:.3;cursor:default}
+.pg{position:fixed;left:24px;bottom:30px;color:#7A828E;font-size:15px;
+    font-variant-numeric:tabular-nums;z-index:9;display:flex;align-items:baseline;gap:12px}
+.pg b{color:#D6DBE2;font-weight:700}
+.pg s{text-decoration:none;font-size:13.5px;font-weight:700;letter-spacing:.03em;opacity:.95}
+</style>
+</head>
+<body>
+
+<div class="frame"><div class="stage" id="stage">
+
+<!-- 01 표지 ═══════════════════════════════════════════════ -->
+<div class="slide cover">
+  <div class="a eyebrow">LG유플러스 유레카 백엔드 · 종합프로젝트 멘토링</div>
+  <h1 class="a">검증 배치 서버</h1>
+  <div class="a sub">선착순 쿠폰 · 관제 · 대기열 · 검증<br>
+    재고 10,000장에 동시 20,000명이 몰릴 때</div>
+  <div class="a bars">
+    <i style="width:96px;background:#5B6B8C"></i>
+    <i style="width:150px;background:#2F7D82"></i>
+    <i style="width:210px;background:#9A6A18"></i>
+    <i style="width:420px;background:#C2566A"></i>
+  </div>
+  <div class="a who">
+    <span><b>4조 KAFKICK</b></span>
+    <span>허건 · 박지훈 · 설승환 · 유희준 · 이경주</span>
+    <span>Spring Boot 4.1 · MySQL · Redis · Kafka</span>
+  </div>
+</div>
+
+<!-- 02 목차 ═══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="a mark">1차 멘토링</div>
+  <div class="a ttl">오늘 이야기할 네 가지</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a toc">
+      <div class="it">
+        <div class="pn" style="color:#5B6B8C">파트 0</div>
+        <div><div class="tt">쿠폰 도메인, 무엇을 세는가</div>
+             <div class="dd">템플릿 → 회차·재고 → 발급건. 뒤의 세 파트가 전부 이 한 장을 다룬다</div></div>
+      </div>
+      <div class="it">
+        <div class="pn" style="color:#2F7D82">파트 I</div>
+        <div><div class="tt">관제, 측정을 망가뜨리지 않는다</div>
+             <div class="dd">발급 경로에 추가하는 DB 쓰기 0. 그리고 Prometheus 를 안 쓰기로 한 이유</div></div>
+      </div>
+      <div class="it">
+        <div class="pn" style="color:#9A6A18">파트 II</div>
+        <div><div class="tt">대기열 게이트웨이, 유입을 조절한다</div>
+             <div class="dd">한산하면 통과, 몰리면 큐. 장애가 아니라 회복을 시험한다</div></div>
+      </div>
+      <div class="it">
+        <div class="pn" style="color:#C2566A">파트 III</div>
+        <div><div class="tt">검증 배치, 결과가 맞는지 확인한다</div>
+             <div class="dd">발급 300만 건. 규칙이 깨진 건을 사람이 찾는 건 불가능하다</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot"><b>v1</b> DB 비관적 락 → <b>v2</b> Redis 원자 카운터 → <b>v3</b> Kafka 비동기 로 구현하고 같은 조건에서 성능을 비교 측정합니다 · 측정 환경 2 vCPU 단일 노드</div>
+</div>
+
+<!-- 03 도메인 3단계 ═══════════════════════════════════════ -->
+<div data-part="0" class="slide">
+  <div class="a mark">파트 0 · 1</div>
+  <div class="a ttl">쿠폰을 세 단계로 나눴다</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div class="flow"><b>coupon_templates</b>      관리자가 설정하는 정책 원본
+        │
+        │  회차 생성 시 정책을 <span class="acc">복사(스냅샷)</span>
+        ▼
+<b>coupons</b>                특정 날짜에 열리는 발급 회차
+        │
+        ├──▶ <b>coupon_stocks</b>   회차별 재고
+        ▼
+<b>issuances</b>              사용자가 발급받은 쿠폰
+        │
+        ▼
+<b>issuance_histories</b>     상태 변경 이력
+                         <span class="acc">← 파트 III 이 여기를 재생한다</span></div>
+      <div>
+        <div class="card" style="margin-bottom:26px">
+          <div class="h3">정책 스냅샷</div>
+          <div class="bd">할인율을 20%→30% 로 고쳐도 <b>이미 열린 20% 회차는 그대로</b>입니다. 템플릿 수정이 과거 회차를 바꾸면 안 됩니다.</div>
+        </div>
+        <div class="card" style="margin-bottom:26px">
+          <div class="h3">삭제 대신 비활성화</div>
+          <div class="bd">기존 회차가 템플릿을 참조합니다. <code>active=false</code> 로 새 회차 생성만 막고 참조 관계는 유지합니다.</div>
+        </div>
+        <div class="card">
+          <div class="h3">할인 정책 검증</div>
+          <div class="bd">컨트롤러가 아니라 <b>도메인 모델</b>에서 검사합니다. 그래야 생성과 수정에 같은 규칙이 걸립니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">템플릿과 사용자 쿠폰을 직접 잇지 않고 <b>회차를 중간에 뒀습니다</b>. 같은 템플릿을 매월 반복하면서 회차마다 재고와 기간을 독립으로 관리하기 위해서입니다</div>
+</div>
+
+<!-- 04 발급 방어 ═══════════════════════════════════════════ -->
+<div data-part="0" class="slide">
+  <div class="a mark">파트 0 · 2</div>
+  <div class="a ttl">발급은 애플리케이션 검사만 믿지 않는다</div>
+  <div class="a lede">DB 제약과 락을 <b>함께</b> 씁니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div class="ladder">
+        <div class="rung"><span class="i">1</span><span><code>UNIQUE(coupon_id, member_id)</code></span><span class="c">회차별 1인 1매</span></div>
+        <div class="rung"><span class="i">2</span><span><code>coupon_stocks</code> 행만 비관적 락</span><span class="c">재고 행 단위</span></div>
+        <div class="rung"><span class="i">3</span><span><code>active_count &lt;= total_quantity</code></span><span class="c">초과발급 차단</span></div>
+        <div class="rung"><span class="i">4</span><span>실패 시 발급건·재고·이력 함께 롤백</span><span class="c">부분 반영 없음</span></div>
+        <div class="rung"><span class="i">5</span><span>성공 시 발급건 + 이력 저장</span><span class="c">한 트랜잭션</span></div>
+      </div>
+      <div>
+        <div class="note" style="margin-bottom:28px"><code>active_count</code> 는 누적 발급량이 아니라 <b>현재 ISSUED + USED 수량</b>입니다. 취소·만료 시 감소시킵니다. 누적으로 두면 취소한 쿠폰이 재고로 돌아오지 않습니다.</div>
+        <div class="say">이 세 줄이 <span class="hl">파트 III 의 검증 대상</span>입니다</div>
+        <div class="bd" style="font-size:21px;color:var(--ink2);line-height:1.6;margin-top:16px">
+          1인 1매(1) · 초과발급(3) · 취소분 재고 복원(<code>active_count</code>). 여기서 지키기로 한 규칙을 저기서 300만 건에 대해 전수로 다시 확인합니다.</div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">락이 <b>지켜준다고 믿는 것</b>과 <b>실제로 지켜졌는지</b>는 다른 문제입니다 · 템플릿 쪽 구현은 끝났고 다음은 발급 경로입니다</div>
+</div>
+
+<!-- 05 관제 데이터 배치 ════════════════════════════════════ -->
+<div data-part="1" class="slide">
+  <div class="a mark">파트 I · 1</div>
+  <div class="a ttl">관제가 측정 대상을 바꾸지 않게 한다</div>
+  <div class="a lede">관제가 측정을 오염시키는 경로는 둘입니다. <b>발급 경로에 관제용 쓰기를 얹는 것</b>, <b>대시보드 조회가 운영 DB 자원을 가져가는 것</b>. 둘 다 v1/v2/v3 의 숫자를 바꿉니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div class="flow"><b>api JVM</b>  카운터·Timer        <span class="acc">① 요청마다 로컬 증감</span>
+   │                              발급 경로에 I/O 없음
+   │ 1초 게시
+   ▼
+<b>Redis</b>  인스턴스별 TTL 키       <span class="acc">② 각자 자기 것만 쓴다</span>
+   │
+   │ roster 집계 · fresh/stale 판정
+   ▼
+<b>batch 수집기</b> @Scheduled(1000)  <span class="acc">③ 고유 의미를 판정</span>
+   │
+   ▼
+<b>Redis</b>  latest + series        1초 스냅샷 시계열
+   │        LPUSH + LTRIM, 최근 900개
+   │ 회차 종료 시
+   ▼
+<b>MySQL</b>  완료 회차 시계열        <span class="acc">④ 회차당 약 900행</span></div>
+      <div>
+        <div class="metrics" style="grid-auto-flow:row;grid-auto-columns:auto">
+          <div class="metric"><div class="v acc">0</div><div class="l">발급 경로에 추가한 DB 쓰기</div></div>
+          <div class="metric" style="border-right:none;border-top:1px solid var(--rule2)"><div class="v">1초</div><div class="l">스냅샷 주기 · 카운터를 게시하는 간격</div></div>
+        </div>
+        <div class="note" style="margin-top:30px">“200 이 몇 건, 409 가 몇 건”은 <b>행을 쌓아 세지 않고 카운터로</b> 셉니다. 2만 요청이 들어와도 카운터는 그대로입니다.</div>
+        <div class="bd" style="font-size:20px;color:var(--ink3);line-height:1.6;margin-top:22px">
+          요청별 실패 원인은 <code>Kafka(acks=0)</code> → 별도 컨슈머 → <code>issue_attempts</code> 로 흘립니다. 유실 가능하므로 <b>건수 원천으로는 쓰지 않습니다.</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 Prometheus ═════════════════════════════════════════ -->
+<div data-part="1" class="slide">
+  <div class="a mark">파트 I · 2</div>
+  <div class="a ttl">가장 고민한 결정, Prometheus 를 안 씁니다</div>
+  <div class="a lede">Micrometer 는 쓰되 레지스트리는 인메모리. 시계열 보관은 Redis + MySQL 이 합니다. 이유는 <b>원천을 이미 나눠놨기 때문</b>입니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <table>
+        <thead><tr><th>무엇</th><th>원천</th></tr></thead>
+        <tbody>
+          <tr><td><b>공식 p95 · p99 · TPS</b></td><td>부하 생성기 원본 표본<br><span class="dim">클라이언트가 성공 응답 받은 시점 기준</span></td></tr>
+          <tr><td><b>실시간 서버 지연 · 자원</b></td><td>Micrometer → batch 수집기 → Redis</td></tr>
+          <tr><td><b>완료 회차 시계열</b></td><td>MySQL</td></tr>
+          <tr><td><b>요청별 실패 원인</b></td><td><code>issue_attempts</code> <span class="dim">(건수 원천 아님)</span></td></tr>
+        </tbody>
+      </table>
+      <div>
+        <div class="say" style="font-size:30px;margin-bottom:22px">같은 숫자가 <span class="hl">버전에 따라</span><br>정상이기도, 오류이기도 합니다</div>
+        <table>
+          <tbody>
+            <tr><td class="n"><b>v1</b></td><td>Redis 지표가 존재하지 않는다</td><td><span class="tag wait">N/A 표시</span></td></tr>
+            <tr><td class="n"><b>v2</b></td><td>Redis ↔ DB drift 가 있다</td><td><span class="tag block">오류</span></td></tr>
+            <tr><td class="n"><b>v3</b></td><td>Kafka backlog 가 쌓인다</td><td><span class="tag pass">정상</span></td></tr>
+          </tbody>
+        </table>
+        <div class="note" style="margin-top:26px">Prometheus 를 병행하면 <b>이 판정이 두 경로에 생깁니다.</b> 비어 있는 칸은 못 채우면서 회차 경계·집계·보존 경로만 하나 더 늘어납니다.</div>
+      </div>
+    </div>
+    <div class="cols c3" style="margin-top:34px">
+      <div class="card"><div class="h3" style="font-size:26px">D1 운영 현황</div>
+        <div class="bd sm">지금 회차가 어떻게 돌고 있나. 초과발급 · 응답 6분류 rate · 대기열 길이 · 상태 전이 rate</div></div>
+      <div class="card"><div class="h3" style="font-size:26px">D2 시스템 관제</div>
+        <div class="bd sm">서버가 버티고 있나. p50/p95/p99 · in-flight · DB 풀 · Redis 지연 · Kafka 랙 · CB 3종</div></div>
+      <div class="card acc"><div class="h3" style="font-size:26px">D3 분석 · 비교</div>
+        <div class="bd sm">완료 회차끼리 v1/v2/v3 를 맞대 본다. 공식 p95·p99·TPS · Redis↔DB 격차</div></div>
+    </div>
+  </div>
+  <div class="a foot"><b>화면은 셋입니다</b> · <b>아직 못 메운 곳</b>. Redis series 는 900개를 넘으면 오래된 것부터 버립니다. MySQL 로 옮기는 주체가 아직 정해지지 않았습니다</div>
+</div>
+
+<!-- 07 판정 순서 ══════════════════════════════════════════ -->
+<div data-part="2" class="slide">
+  <div class="a mark">파트 II · 1</div>
+  <div class="a ttl">판정은 로컬에서, 배분은 한 곳에서</div>
+  <div class="a lede">게이트웨이 N대가 요청을 받지만 <b>크레딧 배분은 리더 한 대만</b> 합니다. N대가 각자 배분하면 총합이 뒷단 가용량을 넘어, 유입을 조절한다는 전제가 무너집니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="flow" style="font-size:17px">클라이언트 ──▶ <b>게이트웨이 N대</b> ──▶ <b>쿠폰 서비스 N대</b> ──▶ MySQL/Redis/Kafka
+              판정 · 대기열          발급 · 재고 차감
+                    ▲
+                    │ 스냅샷 통째 교체 (매 틱)
+                    │
+          <b>배분 스케줄러 (리더 1대)</b>
+          가용량 수집 → 공정 배분 → 발행</div>
+        <div class="note" style="margin-top:26px">리더가 매 틱 계산한 결과를 스냅샷으로 <b>통째 발행</b>하고 각 노드가 로컬 캐시를 교체합니다. 요청이 오면 그 캐시만 봅니다. <b>통과 경로의 Redis 왕복이 0</b> 입니다.</div>
+      </div>
+      <div class="ladder" style="font-size:19px">
+        <div class="rung" style="padding:6px 8px"><span class="i">1</span><span><code>stock &lt;= 0</code></span><span class="c">매진 종결</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">2</span><span><code>hasValidToken</code></span><span class="c">입장 토큰 통과</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">3</span><span><code>mode == OFF</code></span><span class="c">대기열 꺼짐</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">4</span><span><code>dataStale &amp;&amp; waiting == 0</code></span><span class="c">fail-open</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">5</span><span><code>waiting &gt;= queueCapacity</code></span><span class="c">큐 상한</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">6</span><span><code>dataStale &amp;&amp; waiting &gt; 0</code></span><span class="c">추월 금지</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">7</span><span><code>mode == ALWAYS</code></span><span class="c">항상 큐</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">8</span><span><code>runtime != IDLE</code></span><span class="c">새치기 방지</span></div>
+        <div class="rung hi" style="padding:6px 8px"><span class="i">9</span><span><code>tryAcquireAll</code> 쿠폰별·노드전역</span><span class="c">상한 초과분만 큐</span></div>
+        <div class="rung" style="padding:6px 8px"><span class="i">10</span><span>그 외</span><span class="c">무대기 통과</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot"><b>9번이 이 제품의 존재 이유입니다.</b> 한산한 쿠폰은 credit 이 0 이지만 상한은 credit 이 아니라 <b>노드 몫의 전역 크레딧</b>으로 잽니다. credit 으로 재면 한산한 쿠폰일수록 반드시 큐로 갑니다. 이전 구현의 핵심 버그가 정확히 이것이었습니다</div>
+</div>
+
+<!-- 08 낡은 스냅샷 ════════════════════════════════════════ -->
+<div data-part="2" class="slide">
+  <div class="a mark">파트 II · 2</div>
+  <div class="a ttl">스냅샷이 낡았다면, 누가 멎었는지부터 본다</div>
+  <div class="a lede">증상은 똑같이 “판정 재료가 낡았다”지만, <b>첫째는 나 하나만 빠지면 되는 일</b>이고 <b>둘째는 아무도 빠지면 안 되는 일</b>입니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a">
+      <table>
+        <thead><tr><th>구분</th><th>무엇이 멎었나</th><th>대응</th><th>안 나누면</th></tr></thead>
+        <tbody>
+          <tr><td><code>fetchStale</code></td><td><b>이 노드</b>의 수신 루프</td><td>헬스체크 503 → LB 가 이 노드만 뺀다</td><td class="dim">멀쩡한 노드까지 같이 빠진다</td></tr>
+          <tr><td><code>dataStale</code></td><td><b>스케줄러</b>(리더)</td><td>어느 노드도 빠지지 않는다. fail-open 상한으로 버틴다</td><td class="dim">전 노드가 동시에 빠져 100% 장애</td></tr>
+        </tbody>
+      </table>
+      <div class="cols c2" style="gap:52px;margin-top:38px">
+        <div class="note">둘을 가르려면 <b>받아온 시각</b>이 아니라 <b>데이터가 만들어진 시각</b>을 봐야 합니다. 스케줄러가 죽어도 노드는 같은 스냅샷을 계속 받아오므로, 수신 시각만 보면 “방금 갱신했다”고 스스로를 속입니다.</div>
+        <div class="card acc">
+          <div class="h3" style="font-size:28px">fail-open 이 줄을 추월하지 않는다</div>
+          <div class="bd sm">이전 구현은 반대였습니다. 스케줄러가 5초 멎는 동안 큐에 선 5만 명은 자리를 든 채 멈춰 있었고, 그사이 신규 유입만 백엔드로 직행해 재고를 소비했습니다. 회복하고 나니 <b>정직하게 줄 선 사람 전원이 매진</b>을 받았습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 09 회복 시험 ══════════════════════════════════════════ -->
+<div data-part="2" class="slide">
+  <div class="a mark">파트 II · 3</div>
+  <div class="a ttl">장애가 아니라 회복을 시험한다</div>
+  <div class="a lede">장애 대응은 시스템을 <b>다른 모드로 전환</b>합니다. 이 전환은 하나하나 정상으로 되돌아와야 하는데, <b>되돌아오는 순간이 가장 위험합니다.</b></div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <table style="font-size:19px">
+        <thead><tr><th>회복 기준</th><th>내용</th></tr></thead>
+        <tbody>
+          <tr><td><b>RC2</b></td><td>순번 역행 0건</td></tr>
+          <tr><td><b>RC3</b></td><td>회복 후 30초 내 판정 분포 정상 복귀</td></tr>
+          <tr class="hi"><td><b>RC4</b></td><td>회복 순간 백엔드 유입 버스트 ≤ 정상 1.2배</td></tr>
+          <tr><td><b>RC5</b></td><td>장애 중 큐에 있던 사용자가 자기 자리 유지</td></tr>
+          <tr><td><b>RC6</b></td><td>지표·내부 상태가 장애 이전 값으로 수렴</td></tr>
+        </tbody>
+      </table>
+      <div>
+        <div class="metrics">
+          <div class="metric"><div class="v">13</div><div class="l">단일 장애<br>시나리오</div></div>
+          <div class="metric"><div class="v">×3</div><div class="l">진입 · 유지<br>회복 판정</div></div>
+          <div class="metric"><div class="v pass">0</div><div class="l">전 구간<br>순번 역행</div></div>
+        </div>
+        <div class="note" style="margin-top:28px"><b>RC4 가 가장 중요합니다.</b> 나머지가 전부 통과해도 RC4 가 깨지면 <b>회복이 곧 2차 장애</b>가 됩니다. 억눌린 트래픽과 같은 시각에 맞춰진 재시도가 한꺼번에 도착하기 때문입니다.</div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">큐 순서는 카운터가 아니라 <b>Redis 시계의 마이크로초</b>로 매깁니다. 직렬화 지점이 사라지는 대신 시계가 뒤로 갈 수 있어, 단조 바닥값(<code>maxscore</code>)으로 <b>순서는 앞으로만</b> 가게 막습니다</div>
+</div>
+
+<!-- 10 분리 + 계층 ════════════════════════════════════════ -->
+<div data-part="3" class="slide">
+  <div class="a mark">파트 III · 결정 01 · 02</div>
+  <div class="a ttl sm">판정을 발급 서버에서 떼어내고, 배치를 쓰기 대상으로 나눴다</div>
+  <div class="a lede"><b>100장짜리가 101장 나가거나</b>, <b>한 사람이 두 장 받거나</b>, <b>취소한 쿠폰이 재고로 안 돌아오는</b> 일이 생길 수 있습니다. 발급건이 300만 건이라 사람이 찾아내는 건 불가능합니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="flow" style="font-size:18px">발급 서버 ──▶ <b>MySQL (원본)</b>  <span class="acc">← 부하 테스트가 여기를 측정</span>
+                       ▲
+                       │ 읽기 전용
+                       │
+              <b>검증 배치 서버</b>  <span class="acc">← 판정만. 원본에 쓰지 않는다</span>
+              전수 스캔 · 3축 대조 · 이력 재생</div>
+        <div class="note" style="margin-top:26px">발급 서버에 배치로 붙이면 <b>부하 테스트와 검증이 같은 DB 를 써서</b> 성능 측정값이 흔들립니다. 파트 I 에서 관측 전용 DataSource 를 떼어낸 것과 같은 이유입니다.</div>
+      </div>
+      <div>
+        <div class="say" style="font-size:28px;margin-bottom:20px">주기로 묶으니 <span class="hl">위험한 쪽이 안 보였다</span></div>
+        <div class="card" style="margin-bottom:20px"><div class="h3" style="font-size:26px">계층 1 · 3개 &nbsp;<span class="tag block">상태를 바꾼다</span></div>
+          <div class="bd sm">데이터를 실제로 고칩니다. 규칙이 깨질 수 있는 곳이 여기뿐이라 동시성 테스트와 부하 중 정지도 여기서만 필요합니다.</div></div>
+        <div class="card" style="margin-bottom:20px"><div class="h3" style="font-size:26px">계층 2 · 2개 &nbsp;<span class="tag wait">판정한다</span></div>
+          <div class="bd sm">읽기만 합니다. 느려도 다른 데 영향이 없어서 실행 시간에 상한을 두지 않았습니다.</div></div>
+        <div class="card"><div class="h3" style="font-size:26px">계층 3 · 2개 &nbsp;<span class="tag pass">지운다</span></div>
+          <div class="bd sm">찌꺼기 정리입니다. 없어도 검증 결과에 영향이 없어서, 일정이 밀리면 여기부터 뺍니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 11 배치 7종 ═══════════════════════════════════════════ -->
+<div data-part="3" class="slide">
+  <div class="a mark">파트 III · 결정 03</div>
+  <div class="a ttl">일곱 중 둘에만 Spring Batch 를 썼다</div>
+  <div class="a lede">Spring Batch 는 잡이 돌 때마다 <b>실행 이력 테이블 네 개</b>에 기록을 쌓습니다. 그 DB 가 <b>검증 대상 DB 와 같습니다.</b> 열두 줄짜리 표를 읽는 작업에까지 붙이면 검증할 데이터에 배치 메타데이터 쓰기가 계속 섞입니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:44px;align-items:start">
+      <div>
+        <div class="ladder">
+          <div class="rung"><span class="i">1</span><span>중간에 죽으면 이어서 돌아야 하는가</span><span class="c">재시작</span></div>
+          <div class="rung"><span class="i">2</span><span>실행 이력이 판정 근거가 되는가</span><span class="c">증거</span></div>
+          <div class="rung"><span class="i">3</span><span>같은 조건으로 다시 돌렸음을 증명해야 하는가</span><span class="c">재현</span></div>
+          <div class="split">하나라도 걸리면 프레임워크 · 하나도 안 걸리면 스케줄러</div>
+        </div>
+      </div>
+      <table style="font-size:19px">
+        <thead><tr><th>무엇</th><th>주기</th><th>도구</th></tr></thead>
+        <tbody>
+          <tr class="hi"><td><b>검증</b></td><td class="dim">온디맨드 / 10분</td><td><span class="tag acc">Spring Batch</span></td></tr>
+          <tr class="hi"><td><b>만료 처리</b></td><td class="dim">5분</td><td><span class="tag acc">Spring Batch</span></td></tr>
+          <tr><td>회차 상태 전이</td><td class="dim">1분</td><td><span class="tag pass">스케줄러</span></td></tr>
+          <tr><td>회차 생성</td><td class="dim">매일 새벽</td><td><span class="tag pass">스케줄러</span></td></tr>
+          <tr><td>정리</td><td class="dim">1시간</td><td><span class="tag pass">스케줄러</span></td></tr>
+          <tr><td>리포트</td><td class="dim">최종 1회</td><td><span class="tag wait">관리 API</span></td></tr>
+          <tr><td>DLT 재처리</td><td class="dim">수동</td><td><span class="tag block">보류</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="a foot"><b>검증</b>은 셋 다 해당합니다. 300만 건을 훑고, 이력이 증거가 되고, 재현을 증명해야 한다 · <b>만료 처리</b>는 첫째만 해당 · 나머지는 표 열두 줄을 읽거나 오래된 행을 지우는 SQL 한 번</div>
+</div>
+
+<!-- 12 이력 재계산 ════════════════════════════════════════ -->
+<div data-part="3" class="slide">
+  <div class="a mark">파트 III · 결정 04</div>
+  <div class="a ttl">상태 칸 대신 이력을 읽어 상태를 다시 계산한다</div>
+  <div class="a lede">어떤 쿠폰의 상태 칸에 <b>사용됨</b>이라고 적혀 있어도 그 값이 맞다고 볼 수 없습니다. 코드 버그나 배치 중단으로 잘못 적혔을 수 있습니다. <b>검증이 그 값을 그대로 읽으면 틀린 데이터를 정상으로 판정합니다.</b></div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px;align-items:center">
+      <div class="flow" style="font-size:20px">이력 테이블
+
+  발급됨 ─▶ 사용됨 ─▶ 취소됨
+  └──────── <b>재생</b> ────────┘
+              │
+              ▼
+        <b>계산된 상태</b>
+              ⟷
+     <span class="acc">상태 칸에 적힌 값</span>
+
+     다르면 → <span class="acc">위반 1건</span></div>
+      <div>
+        <div class="say">발급됨 → 사용됨 → 취소됨 순서로 <span class="hl">재생</span>해<br>지금 어떤 상태여야 하는지 계산하고,<br>실제 값과 맞춰 봅니다</div>
+        <div class="note" style="margin-top:30px">규칙 <b>6종</b> 중 하나가 여기서 어긋난 건을 잡습니다. 상태 칸을 신뢰하지 않는 것이 이 규칙의 전제입니다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 13 오염 데이터 ════════════════════════════════════════ -->
+<div data-part="3" class="slide">
+  <div class="a mark">파트 III · 결정 05</div>
+  <div class="a ttl">검증기가 동작하는지를 오염 데이터로 확인한다</div>
+  <div class="a lede">검증기가 아무것도 못 찾았을 때, <b>데이터가 깨끗해서인지 검증기가 동작을 안 해서인지</b> 구분할 수 없습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a">
+      <div class="metrics">
+        <div class="metric"><div class="v">700</div><div class="l">일부러 심은<br>오염 건</div></div>
+        <div class="metric"><div class="v">800</div><div class="l">미리 적어 둔<br>정답 행</div></div>
+        <div class="metric"><div class="v pass">0</div><div class="l">놓친 건<br>(miss)</div></div>
+        <div class="metric"><div class="v pass">0</div><div class="l">잘못 찾은 건<br>(false)</div></div>
+      </div>
+      <div class="cols c2" style="gap:52px;margin-top:44px">
+        <div class="say" style="font-size:30px">검증기가 찾은 목록과 정답을<br><span class="hl">양방향으로</span> 비교합니다</div>
+        <div class="note"><b>건수만 비교하면 안 되는 이유.</b> 놓친 게 400건, 잘못 찾은 게 400건이어도 합계는 800으로 맞아떨어집니다. 그래서 건수 대신 <b>목록</b>을 비교합니다.</div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">놓친 건과 잘못 찾은 건이 <b>모두 0이어야</b> 통과입니다</div>
+</div>
+
+<!-- 14 기준 시각 + 판정 ═══════════════════════════════════ -->
+<div data-part="3" class="slide">
+  <div class="a mark">파트 III · 결정 06</div>
+  <div class="a ttl sm">기준 시각을 고정하고, 불일치는 실패로 처리하지 않는다</div>
+  <div class="a lede">검증이 도는 몇 분 동안에도 발급은 계속됩니다. 이대로 두면 <b>돌릴 때마다 결과가 달라져</b> 판정 근거로 쓸 수 없습니다. 기준 시각을 하나 정해 두고 그 시점 데이터만 읽습니다.</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a">
+      <table>
+        <thead><tr><th style="width:60px"></th><th>무슨 일이 있었나</th><th>배치 판정</th><th>누가 봐야 하나</th></tr></thead>
+        <tbody>
+          <tr><td class="n"><b>A</b></td><td>전수 스캔 완료 · 위반 0건</td><td><span class="tag pass">배치 성공</span></td><td class="dim">데이터 정상</td></tr>
+          <tr><td class="n"><b>B</b></td><td>전수 스캔 완료 · 위반 N건</td><td><span class="tag pass">배치 성공</span></td><td><b>데이터 확인 필요</b></td></tr>
+          <tr class="hi"><td class="n"><b>C</b></td><td>판정을 내지 못함</td><td><span class="tag block">배치 실패</span></td><td><b>서버 확인 필요</b></td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top:38px"><b>B 와 C 를 같은 알람으로 묶으면</b>, 서버를 고쳐야 할 상황과 데이터를 확인해야 할 상황이 구분되지 않습니다. 데이터가 틀렸다는 판정이 나와도 <b>배치는 정상 종료</b>입니다. 배치가 실패했다고 할 때는 <b>판정을 내지 못한 경우뿐</b>입니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 15 인덱스 + 돌연변이 ══════════════════════════════════ -->
+<div data-part="3" class="slide">
+  <div class="a mark">파트 III · 결정 07 · 08</div>
+  <div class="a ttl sm">재보고 나서 넣는다 · 초록인 것과 지켜지는 것은 다르다</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <div>
+        <div class="card acc"><div class="num">07</div>
+          <div class="h3" style="font-size:30px">선제 인덱스 6개를 되돌렸다</div>
+          <div class="bd">검증 질의를 보며 필요할 것 같은 인덱스를 여섯 개 미리 넣었는데, 시드 저장소 인덱스 파일 첫 줄에 이렇게 적혀 있었습니다.</div>
+          <div class="note" style="margin-top:16px;font-size:20px">보조 인덱스가 없는 것은 누락이 아니라 <b>의도</b>다. 300만 건에서 느린 질의를 직접 겪고 실행계획을 본 다음 인덱스를 넣어 <b>개선폭을 재는 것까지가 과제</b>다.</div>
+          <div class="bd sm" style="margin-top:14px"><code>EXPLAIN ANALYZE</code> 로 근거를 만든 뒤에 다시 넣겠다는 뜻입니다. <b>측정값 자체가 제출물</b>이기도 합니다.</div>
+        </div>
+      </div>
+      <div>
+        <div class="card"><div class="num">08</div>
+          <div class="h3" style="font-size:30px">안전장치를 지워 보고<br>테스트가 빨개지는지 확인한다</div>
+          <div class="bd">검증 로직에 안전장치를 넣고 테스트를 같이 붙였습니다. 나중에 확인해 보니 <b>그 안전장치를 지워도 테스트가 전부 통과</b>했습니다. 테스트가 다른 이유로 초록이었던 겁니다.</div>
+          <div class="bd sm" style="margin-top:12px">그래서 커밋 전에 안전장치를 하나씩 지워 보고, <b>의도한 테스트가 실제로 빨개지는지</b> 확인합니다. 이 방식으로 테스트 없이 들어가 있던 안전장치를 여러 개 찾아 채웠습니다.</div>
+        </div>
+        <div class="metrics" style="margin-top:30px">
+          <div class="metric"><div class="v acc">6 → 0</div><div class="l">되돌린 선제 인덱스</div></div>
+          <div class="metric"><div class="v">407</div><div class="l">테스트 · <b style="color:var(--pass)">0 실패</b></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="a foot">파트 II 의 <b>“샤딩은 재보고 나서 결정한다”</b>와 같은 규칙입니다. 미리 넣지 않고, 재보고 나서 넣습니다</div>
+</div>
+
+<!-- 16 현재 진행 ══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="a mark">현재</div>
+  <div class="a ttl">일곱 중 검증 하나를 끝냈다</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a cols c2" style="gap:52px">
+      <table style="font-size:19px">
+        <thead><tr><th>무엇</th><th>계층</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr class="hi"><td><b>검증</b> <span class="dim">Spring Batch</span></td><td class="dim">2 · 판정</td><td><span class="tag pass">완료</span> <span class="dim">단계 11개</span></td></tr>
+          <tr class="hi"><td><b>통계 집계</b></td><td class="dim">2 · 판정</td><td><span class="tag pass">완료</span> <span class="dim">검증의 마지막 단계</span></td></tr>
+          <tr><td>만료 처리 <span class="dim">Spring Batch</span></td><td class="dim">1 · 상태 변경</td><td><span class="tag wait">다음</span></td></tr>
+          <tr><td>회차 상태 전이 · 생성</td><td class="dim">1 · 상태 변경</td><td><span class="tag wait">다음</span></td></tr>
+          <tr><td>리포트</td><td class="dim">2 · 판정</td><td><span class="tag wait">다음</span></td></tr>
+          <tr><td>정리 · DLT 재처리</td><td class="dim">3 · 정리</td><td><span class="tag block">컷 후보</span></td></tr>
+        </tbody>
+      </table>
+      <div>
+        <div class="say" style="font-size:28px;margin-bottom:20px">완성 기준 셋, <span class="hl">전부 자동으로</span> 확인합니다</div>
+        <div class="ladder">
+          <div class="rung"><span class="i">1</span><span>정상 데이터 검출 0건</span><span class="c"><span class="tag pass">통과</span></span></div>
+          <div class="rung"><span class="i">2</span><span>오염 데이터 정답 800행과 목록 일치</span><span class="c"><span class="tag pass">통과</span></span></div>
+          <div class="rung"><span class="i">3</span><span>같은 시각 두 번 실행 시 결과 일치</span><span class="c"><span class="tag pass">통과</span></span></div>
+        </div>
+        <div class="note" style="margin-top:26px"><b>검증할 데이터를 만드는 시드 도구</b>도 끝났습니다. 회차 <b>147</b> · 발급건 <b>300만</b> · 이력 <b>534만</b> 을 심고 오염 데이터와 정답도 만듭니다. 별도 저장소라 운영 서버에는 뜨지 않습니다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 17 마무리 ═════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="a mark">마무리</div>
+  <div class="a ttl">세 파트를 관통하는 한 가지</div>
+  <div class="accbar"></div>
+  <div class="body">
+    <div class="a">
+      <div class="cols c3">
+        <div class="card"><div class="h3">관제</div>
+          <div class="bd"><b>관측 경로를 나눠</b><br>측정 오염을 막았고</div></div>
+        <div class="card"><div class="h3">게이트웨이</div>
+          <div class="bd"><b>낡음의 원인을 나눠</b><br>대응을 갈랐고</div></div>
+        <div class="card acc"><div class="h3">검증</div>
+          <div class="bd"><b>배치 실패와 데이터 이상을 나눠</b><br>알람을 갈랐습니다</div></div>
+      </div>
+      <div class="say" style="font-size:44px;text-align:center;margin-top:64px;line-height:1.35">
+        그리고 셋 다 미리 넣지 않고,<br><span class="hl">재보고 나서 넣습니다.</span></div>
+    </div>
+  </div>
+  <div class="a foot"><b>4조 KAFKICK</b> &nbsp; 허건 · 박지훈 · 설승환 · 유희준 · 이경주 &nbsp;·&nbsp; 쿠폰 도메인 · 관제 · 적응형 대기열 게이트웨이 · 검증 배치 서버</div>
+</div>
+
+</div></div>
+
+<div class="pg" id="pg"></div>
+<div class="rail" id="rail"></div>
+<div class="ctl">
+  <button class="nav" id="prev" type="button" aria-label="이전">‹</button>
+  <button class="nav" id="next" type="button" aria-label="다음">›</button>
+  <button class="ib" id="fs" type="button" aria-label="전체화면">⛶</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $  = function(s,r){ return (r||document).querySelector(s); };
+  var $$ = function(s,r){ return [].slice.call((r||document).querySelectorAll(s)); };
+
+  /* 1920×1080 캔버스를 화면에 맞춘다 */
+  var stage = $("#stage");
+  function fit(){ stage.style.transform = "scale(" + Math.min(innerWidth/1920, innerHeight/1080) + ")"; }
+  addEventListener("resize", fit); fit();
+
+  var slides = $$(".slide"), rail = $("#rail"), pg = $("#pg"), N = slides.length, idx = -1;
+
+  /* 파트마다 색이 다르다. 레일도 같은 색을 따라가면
+     지금 어느 파트에 있고 얼마나 남았는지가 한눈에 보인다. */
+  var PART = { "0":["파트 0 · 도메인","#5B6B8C"], "1":["파트 I · 관제","#2F7D82"],
+               "2":["파트 II · 게이트웨이","#9A6A18"], "3":["파트 III · 검증","#C2566A"] };
+
+  slides.forEach(function(s,i){
+    var b = document.createElement("button");
+    b.className = "pip"; b.type = "button";
+    b.setAttribute("aria-label", (i+1) + "번 슬라이드");
+    var p = PART[s.dataset.part];
+    if(p) b.style.setProperty("--c", p[1]);
+    b.onclick = function(){ go(i); };
+    rail.appendChild(b);
+  });
+  var pips = $$(".pip", rail);
+
+  /* 실패 안전장치 · 진입 모션이 끝날 시간이 지나면 무조건 보이게 한다.
+     애니메이션이 아예 안 도는 환경에서도 슬라이드가 비지 않는다. */
+  var showTimer;
+  function ensureShown(el){
+    clearTimeout(showTimer);
+    showTimer = setTimeout(function(){ el.classList.add("shown"); }, 900);
+  }
+
+  function go(i){
+    i = Math.max(0, Math.min(N-1, i));
+    if(i === idx) return;
+    slides.forEach(function(s,k){
+      s.classList.toggle("on", k===i);
+      if(k!==i) s.classList.remove("shown");
+    });
+    ensureShown(slides[i]);
+    pips.forEach(function(p,k){ p.dataset.on = k===i ? "1" : "0"; });
+    idx = i;
+    $("#prev").disabled = idx===0;
+    $("#next").disabled = idx===N-1;
+    var p = PART[slides[i].dataset.part];
+    pg.innerHTML = "<b>" + (idx+1) + "</b> / " + N
+                 + (p ? " <s style='color:"+p[1]+"'>"+p[0]+"</s>" : "");
+    if(location.hash !== "#"+(idx+1)) history.replaceState(null, "", "#"+(idx+1));
+  }
+
+  $("#prev").onclick = function(){ go(idx-1); };
+  $("#next").onclick = function(){ go(idx+1); };
+
+  document.onkeydown = function(e){
+    var k = e.key;
+    if(k==="ArrowRight" || k==="PageDown" || k===" "){ e.preventDefault(); go(idx+1); }
+    else if(k==="ArrowLeft" || k==="PageUp"){ e.preventDefault(); go(idx-1); }
+    else if(k==="Home"){ e.preventDefault(); go(0); }
+    else if(k==="End"){ e.preventDefault(); go(N-1); }
+    else if(k==="f" || k==="F"){ $("#fs").click(); }
+  };
+
+  $("#fs").onclick = function(){
+    if(document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  };
+
+  /* 클릭으로도 넘어간다 · 발표 중 리모컨 대용 */
+  $(".frame").onclick = function(e){
+    if(e.target.closest("button")) return;
+    go(idx + (e.clientX < innerWidth*0.25 ? -1 : 1));
+  };
+
+  var start = parseInt((location.hash||"#1").slice(1), 10);
+  go(isNaN(start) ? 0 : start-1);
+})();
+</script>
+</body>
+</html>

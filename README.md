@@ -7,7 +7,8 @@
 ```
 profile/README.md     조직 프로필. github.com/coupon-yaho 상단 소개글
 index.html            발표 자산 랜딩
-plan/index.html       기획안 발표 (4조 KAFKICK)
+plan/index.html       기획안 발표 (2026.08.11)
+mentoring/index.html  1차 멘토링 발표 (2026.08.18)
 assets/               Pretendard 서브셋 폰트 3종 · 로고
 .github/workflows/    Pages 배포
 ```
@@ -17,6 +18,7 @@ assets/               Pretendard 서브셋 폰트 3종 · 로고
 ```
 https://coupon-yaho.github.io/.github/
 https://coupon-yaho.github.io/.github/plan/
+https://coupon-yaho.github.io/.github/mentoring/
 ```
 
 리포 이름이 `.github` 라 하위 경로로 붙습니다. 조직 대표 주소
@@ -25,7 +27,7 @@ https://coupon-yaho.github.io/.github/plan/
 
 ## 배포 방법
 
-`main` 에 `index.html` · `plan/**` · `assets/**` 가 바뀌면 자동으로 배포됩니다.
+`main` 에 `index.html` · `plan/**` · `mentoring/**` · `assets/**` 가 바뀌면 자동으로 배포됩니다.
 수동 실행은 Actions → Deploy site to Pages → Run workflow.
 
 **최초 1회** Settings → Pages → Source 를 **GitHub Actions** 로 바꿔야 합니다.
