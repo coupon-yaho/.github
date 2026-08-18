@@ -281,7 +281,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 03 도메인 3단계 ═══════════════════════════════════════ -->
 <div data-part="0" class="slide">
-  <div class="a ttl">쿠폰을 세 단계로 나눴다</div>
+  <div class="a ttl">쿠폰 발급 과정</div>
   <div class="accbar"></div>
   <div class="body">
     <div class="a cols c2" style="gap:52px">
@@ -319,7 +319,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 04 발급 방어 ═══════════════════════════════════════════ -->
 <div data-part="0" class="slide">
-  <div class="a ttl">발급은 애플리케이션 검사만 믿지 않는다</div>
+  <div class="a ttl">쿠폰 발급의 신뢰성</div>
   <div class="a lede">DB 제약과 락을 <b>함께</b> 씁니다.</div>
   <div class="accbar"></div>
   <div class="body">
@@ -344,7 +344,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 05 관제 데이터 배치 ════════════════════════════════════ -->
 <div data-part="1" class="slide">
-  <div class="a ttl">관제가 측정 대상을 바꾸지 않게 한다</div>
+  <div class="a ttl sm">관제가 발급에 영향을 주지 않도록 분리</div>
   <div class="a lede">관제가 측정을 오염시키는 경로는 둘입니다. <b>발급 경로에 관제용 쓰기를 얹는 것</b>, <b>대시보드 조회가 운영 DB 자원을 가져가는 것</b>. 둘 다 v1/v2/v3 의 숫자를 바꿉니다.</div>
   <div class="accbar"></div>
   <div class="body">
@@ -380,7 +380,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 06 Prometheus ═════════════════════════════════════════ -->
 <div data-part="1" class="slide">
-  <div class="a ttl">가장 고민한 결정, Prometheus 를 안 씁니다</div>
+  <div class="a ttl">관제 파트, Prometheus 미도입</div>
   <div class="a lede">Micrometer 는 쓰되 레지스트리는 인메모리. 시계열 보관은 Redis + MySQL 이 합니다. 이유는 <b>원천을 이미 나눠놨기 때문</b>입니다.</div>
   <div class="accbar"></div>
   <div class="body">
@@ -420,7 +420,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 07 판정 순서 ══════════════════════════════════════════ -->
 <div data-part="2" class="slide">
-  <div class="a ttl">판정은 로컬에서, 배분은 한 곳에서</div>
+  <div class="a ttl sm">판정은 로컬에서, 배분은 스케줄러에서</div>
   <div class="a lede">게이트웨이 N대가 요청을 받지만 <b>크레딧 배분은 리더 한 대만</b> 합니다. N대가 각자 배분하면 총합이 뒷단 가용량을 넘어, 유입을 조절한다는 전제가 무너집니다.</div>
   <div class="accbar"></div>
   <div class="body">
@@ -454,7 +454,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 08 낡은 스냅샷 ════════════════════════════════════════ -->
 <div data-part="2" class="slide">
-  <div class="a ttl">스냅샷이 낡았다면, 누가 멎었는지부터 본다</div>
+  <div class="a ttl sm">스냅샷이 오래됐다면, 멈춘 쪽부터 의심</div>
   <div class="a lede">증상은 똑같이 “판정 재료가 낡았다”지만, <b>첫째는 나 하나만 빠지면 되는 일</b>이고 <b>둘째는 아무도 빠지면 안 되는 일</b>입니다.</div>
   <div class="accbar"></div>
   <div class="body">
@@ -479,7 +479,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 09 회복 시험 ══════════════════════════════════════════ -->
 <div data-part="2" class="slide">
-  <div class="a ttl">장애가 아니라 회복을 시험한다</div>
+  <div class="a ttl">시험하는 것은 장애가 아니라 회복</div>
   <div class="a lede">장애 대응은 시스템을 <b>다른 모드로 전환</b>합니다. 이 전환은 하나하나 정상으로 되돌아와야 하는데, <b>되돌아오는 순간이 가장 위험합니다.</b></div>
   <div class="accbar"></div>
   <div class="body">
@@ -509,7 +509,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 10 분리 + 계층 ════════════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a ttl sm">판정을 발급 서버에서 떼어내고, 배치를 쓰기 대상으로 나눴다</div>
+  <div class="a ttl">발급과 배치를 분리</div>
   <div class="a lede"><b>100장짜리가 101장 나가거나</b>, <b>한 사람이 두 장 받거나</b>, <b>취소한 쿠폰이 재고로 안 돌아오는</b> 일이 생길 수 있습니다. 발급건이 300만 건이라 사람이 찾아내는 건 불가능합니다.</div>
   <div class="accbar"></div>
   <div class="body">
@@ -596,7 +596,7 @@ td.dim,.dim{color:var(--ink3)}
 
 <!-- 13 오염 데이터 ════════════════════════════════════════ -->
 <div data-part="3" class="slide">
-  <div class="a ttl">검증기가 동작하는지를 오염 데이터로 확인한다</div>
+  <div class="a ttl">오염 데이터로 배치 동작 검증</div>
   <div class="a lede">검증기가 아무것도 못 찾았을 때, <b>데이터가 깨끗해서인지 검증기가 동작을 안 해서인지</b> 구분할 수 없습니다.</div>
   <div class="accbar"></div>
   <div class="body">
