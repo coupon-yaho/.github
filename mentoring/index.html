@@ -168,6 +168,26 @@ td.dim,.dim{color:var(--ink3)}
 .rung .i{font-size:17px;color:var(--ink3);font-weight:700;font-variant-numeric:tabular-nums}
 .rung .c{font-size:19px;color:var(--ink3)}
 .rung.hi{background:var(--acc-bg)}
+/* 입장 판정 사다리 — 조건 옆에 평문 설명을 붙인다.
+   조건식만 세우면 붙여 읽었을 때 그냥 문자열이 된다. */
+.ladder .rung{grid-template-columns:34px 1fr 74px;gap:12px;padding:7px 10px;
+      font-size:19px;line-height:1.4;color:var(--ink2)}
+.ladder .rung b{color:var(--ink);font-weight:700}
+.ladder .rung code{font-size:17px;color:var(--ink3)}
+.ladder .rung .tag{justify-self:end;font-size:14px;padding:3px 9px}
+.ladder .split{font-size:16px;letter-spacing:.02em;padding:6px 10px;
+      border-top:1px solid var(--rule2);border-bottom:none}
+.ladder .split:first-child{border-top:none}
+.split.acc{background:var(--acc-bg);color:var(--acc)}
+
+/* 판정 결과 · 판정 재료 — 사다리와 열 구성이 다르다 */
+.outc{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;
+      padding:9px 10px;border-bottom:1px solid var(--rule2);
+      font-size:19px;line-height:1.45;color:var(--ink2)}
+.outc b{color:var(--ink);font-weight:700}
+.outc .c{font-family:var(--mono);font-size:17px;color:var(--ink3)}
+.outc.mat{grid-template-columns:132px 1fr}
+.outc.mat .i{font-family:var(--mono);font-size:17px;color:var(--acc);font-weight:700}
 .rung.hi .i{color:var(--acc)}
 .split{padding:8px 10px;background:var(--surface);color:var(--ink3);font-size:16px;font-weight:700;letter-spacing:.1em;border-bottom:1px solid var(--rule2)}
 
@@ -267,7 +287,7 @@ td.dim,.dim{color:var(--ink3)}
       <div class="it">
         <div class="pn" style="color:#9A6A18">파트 II</div>
         <div><div class="tt">대기열 게이트웨이, 유입을 조절한다</div>
-             <div class="dd">한산하면 통과, 몰리면 큐. 장애가 아니라 회복을 시험한다</div></div>
+             <div class="dd">안 몰리면 통과, 몰리면 큐. 장애가 아니라 회복을 시험한다</div></div>
       </div>
       <div class="it">
         <div class="pn" style="color:#C2566A">파트 III</div>
@@ -418,63 +438,54 @@ td.dim,.dim{color:var(--ink3)}
   <div class="a foot"><b>화면은 셋입니다</b> · <b>아직 못 메운 곳</b>. Redis series 는 900개를 넘으면 오래된 것부터 버립니다. MySQL 로 옮기는 주체가 아직 정해지지 않았습니다</div>
 </div>
 
-<!-- 07 판정 순서 ══════════════════════════════════════════ -->
+<!-- 07 게이트웨이의 입장 판정 ═══════════════════════════════ -->
 <div data-part="2" class="slide">
-  <div class="a ttl sm">판정은 로컬에서, 배분은 스케줄러에서</div>
-  <div class="a lede">게이트웨이 N대가 요청을 받지만 <b>크레딧 배분은 리더 한 대만</b> 합니다. N대가 각자 배분하면 총합이 뒷단 가용량을 넘어, 유입을 조절한다는 전제가 무너집니다.</div>
+  <div class="a ttl">게이트웨이의 입장 판정</div>
+  <div class="a lede">클라이언트와 쿠폰 서비스 사이에 서서 <b>입장만</b> 정합니다. 발급 페이지에 들어오면 <code>POST /coupons/{id}/entry</code> 가 한 번 호출되고, 그때 내리는 판정이 아래입니다.</div>
   <div class="accbar"></div>
   <div class="body">
-    <div class="a cols c2" style="gap:52px">
-      <div>
-        <div class="flow" style="font-size:17px">클라이언트 ──▶ <b>게이트웨이 N대</b> ──▶ <b>쿠폰 서비스 N대</b> ──▶ MySQL/Redis/Kafka
-              판정 · 대기열          발급 · 재고 차감
-                    ▲
-                    │ 스냅샷 통째 교체 (매 틱)
-                    │
-          <b>배분 스케줄러 (리더 1대)</b>
-          가용량 수집 → 공정 배분 → 발행</div>
-        <div class="note" style="margin-top:26px">리더가 매 틱 계산한 결과를 스냅샷으로 <b>통째 발행</b>하고 각 노드가 로컬 캐시를 교체합니다. 요청이 오면 그 캐시만 봅니다. <b>통과 경로의 Redis 왕복이 0</b> 입니다.</div>
-      </div>
-      <div class="ladder" style="font-size:19px">
-        <div class="rung" style="padding:6px 8px"><span class="i">1</span><span><code>stock &lt;= 0</code></span><span class="c">매진 종결</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">2</span><span><code>hasValidToken</code></span><span class="c">입장 토큰 통과</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">3</span><span><code>mode == OFF</code></span><span class="c">대기열 꺼짐</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">4</span><span><code>dataStale &amp;&amp; waiting == 0</code></span><span class="c">fail-open</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">5</span><span><code>waiting &gt;= queueCapacity</code></span><span class="c">큐 상한</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">6</span><span><code>dataStale &amp;&amp; waiting &gt; 0</code></span><span class="c">추월 금지</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">7</span><span><code>mode == ALWAYS</code></span><span class="c">항상 큐</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">8</span><span><code>runtime != IDLE</code></span><span class="c">새치기 방지</span></div>
-        <div class="rung hi" style="padding:6px 8px"><span class="i">9</span><span><code>tryAcquireAll</code> 쿠폰별·노드전역</span><span class="c">상한 초과분만 큐</span></div>
-        <div class="rung" style="padding:6px 8px"><span class="i">10</span><span>그 외</span><span class="c">무대기 통과</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="a foot"><b>9번이 이 제품의 존재 이유입니다.</b> 한산한 쿠폰은 credit 이 0 이지만 상한은 credit 이 아니라 <b>노드 몫의 전역 크레딧</b>으로 잽니다. credit 으로 재면 한산한 쿠폰일수록 반드시 큐로 갑니다. 이전 구현의 핵심 버그가 정확히 이것이었습니다</div>
-</div>
+    <div class="a cols" style="grid-template-columns:1fr 1.3fr;gap:50px">
 
-<!-- 08 낡은 스냅샷 ════════════════════════════════════════ -->
-<div data-part="2" class="slide">
-  <div class="a ttl sm">스냅샷이 오래됐다면, 멈춘 쪽부터 의심</div>
-  <div class="a lede">증상은 똑같이 “판정 재료가 낡았다”지만, <b>첫째는 나 하나만 빠지면 되는 일</b>이고 <b>둘째는 아무도 빠지면 안 되는 일</b>입니다.</div>
-  <div class="accbar"></div>
-  <div class="body">
-    <div class="a">
-      <table>
-        <thead><tr><th>구분</th><th>무엇이 멎었나</th><th>대응</th><th>안 나누면</th></tr></thead>
-        <tbody>
-          <tr><td><code>fetchStale</code></td><td><b>이 노드</b>의 수신 루프</td><td>헬스체크 503 → LB 가 이 노드만 뺀다</td><td class="dim">멀쩡한 노드까지 같이 빠진다</td></tr>
-          <tr><td><code>dataStale</code></td><td><b>스케줄러</b>(리더)</td><td>어느 노드도 빠지지 않는다. fail-open 상한으로 버틴다</td><td class="dim">전 노드가 동시에 빠져 100% 장애</td></tr>
-        </tbody>
-      </table>
-      <div class="cols c2" style="gap:52px;margin-top:38px">
-        <div class="note">둘을 가르려면 <b>받아온 시각</b>이 아니라 <b>데이터가 만들어진 시각</b>을 봐야 합니다. 스케줄러가 죽어도 노드는 같은 스냅샷을 계속 받아오므로, 수신 시각만 보면 “방금 갱신했다”고 스스로를 속입니다.</div>
-        <div class="card acc">
-          <div class="h3" style="font-size:28px">fail-open 이 줄을 추월하지 않는다</div>
-          <div class="bd sm">이전 구현은 반대였습니다. 스케줄러가 5초 멎는 동안 큐에 선 5만 명은 자리를 든 채 멈춰 있었고, 그사이 신규 유입만 백엔드로 직행해 재고를 소비했습니다. 회복하고 나니 <b>정직하게 줄 선 사람 전원이 매진</b>을 받았습니다.</div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="flow" style="font-size:17px;padding:18px 22px">클라이언트 ──▶ <b>게이트웨이</b> ──▶ <b>쿠폰 서비스</b> ──▶ MySQL/Redis/Kafka
+              판정 · 대기열      발급 · 재고 차감</div>
+        <div>
+          <div class="split">결과는 셋뿐입니다</div>
+          <div class="outc"><span class="tag pass">통과</span><span>줄 없이 발급 페이지로. <b>Entry-Token</b> 지급</span><span class="c">200</span></div>
+          <div class="outc"><span class="tag wait">큐</span><span>순번 · 예상 대기를 받고 <code>/queue</code> 폴링</span><span class="c">202</span></div>
+          <div class="outc"><span class="tag block">종결</span><span>매진 · 마감 · 오픈 전</span><span class="c">409</span></div>
+        </div>
+        <div>
+          <div class="split">판정 재료 — 전부 로컬 스냅샷</div>
+          <div class="outc mat"><span class="i">stock</span><span>남은 재고 — <b>발급 계층 소유</b></span></div>
+          <div class="outc mat"><span class="i">mode</span><span><b>운영자가 정한</b> 대기열 정책</span></div>
+          <div class="outc mat"><span class="i">runtime</span><span><b>지금 실제로</b> 붐비는 정도</span></div>
+          <div class="outc mat"><span class="i">waiting</span><span>줄 서 있는 사람 수</span></div>
+          <div class="outc mat"><span class="i">dataStale</span><span>오래됐는가 — <b>이것만 노드가 직접 판단</b></span></div>
         </div>
       </div>
+
+      <div class="ladder">
+        <div class="split">더 볼 것도 없는 경우</div>
+        <div class="rung"><span class="i">1</span><span><code>stock &lt;= 0</code> · 스케줄러가 실어 보낸 값. <b>뒷단을 안 칩니다</b></span><span class="tag block">종결</span></div>
+        <div class="split">이미 허가받았거나, 줄이 없는 쿠폰</div>
+        <div class="rung"><span class="i">2</span><span><code>hasValidToken</code> · 차례가 온 사람. <b>다시 안 세웁니다</b></span><span class="tag pass">통과</span></div>
+        <div class="rung"><span class="i">3</span><span><code>mode == OFF</code> · 운영자가 대기열을 꺼뒀습니다</span><span class="tag pass">통과</span></div>
+        <div class="split">스케줄러가 멈춰 재료가 오래됐을 때</div>
+        <div class="rung"><span class="i">4</span><span><code>dataStale &amp;&amp; waiting == 0</code> · <b>줄이 비었습니다</b></span><span class="tag pass">통과</span></div>
+        <div class="rung"><span class="i">5</span><span><code>waiting &gt;= queueCapacity</code> · 줄이 꽉 찼습니다</span><span class="tag block">종결</span></div>
+        <div class="rung"><span class="i">6</span><span><code>dataStale &amp;&amp; waiting &gt; 0</code> · <b>상태를 몰라도 추월은 안 됩니다</b></span><span class="tag wait">큐</span></div>
+        <div class="split">이미 줄이 서 있을 때</div>
+        <div class="rung"><span class="i">7</span><span><code>mode == ALWAYS</code> · 무조건 줄을 세우는 쿠폰</span><span class="tag wait">큐</span></div>
+        <div class="rung"><span class="i">8</span><span><code>runtime != IDLE</code> · 붐빕니다. <b>뒤에 섭니다</b></span><span class="tag wait">큐</span></div>
+        <div class="split acc">여기까지 왔다면 안 몰리는 쿠폰입니다</div>
+        <div class="rung"><span class="i">9</span><span><code>tryAcquireAll</code> · 안 몰려도 무제한은 아닙니다</span><span class="tag wait">큐</span></div>
+        <div class="rung hi"><span class="i">10</span><span>그 외 전부 · <b>줄도 토큰도 없이 뒷단으로</b></span><span class="tag pass">통과</span></div>
+      </div>
+
     </div>
   </div>
+  <div class="a foot"><b>mode 는 사람이 정한 정책, runtime 은 기계가 잰 현재입니다.</b> 섞으면 “붐빈다”와 “줄을 세우기로 했다”를 구분할 수 없습니다 · 발급과 재고 차감은 게이트웨이가 하지 않습니다</div>
 </div>
 
 <!-- 09 회복 시험 ══════════════════════════════════════════ -->
@@ -504,7 +515,7 @@ td.dim,.dim{color:var(--ink3)}
       </div>
     </div>
   </div>
-  <div class="a foot">큐 순서는 카운터가 아니라 <b>Redis 시계의 마이크로초</b>로 매깁니다. 직렬화 지점이 사라지는 대신 시계가 뒤로 갈 수 있어, 단조 바닥값(<code>maxscore</code>)으로 <b>순서는 앞으로만</b> 가게 막습니다</div>
+  <div class="a foot">모든 시나리오를 <b>진입 → 유지 → 회복</b> 세 단계로 나눠 판정합니다. 장애 중 동작만 보는 테스트는 <b>회복에서 무너지는 결함을 하나도 잡지 못합니다</b></div>
 </div>
 
 <!-- 10 분리 + 계층 ════════════════════════════════════════ -->
@@ -636,36 +647,6 @@ td.dim,.dim{color:var(--ink3)}
   </div>
 </div>
 
-<!-- 15 인덱스 + 돌연변이 ══════════════════════════════════ -->
-<div data-part="3" class="slide">
-  <div class="a ttl sm">재보고 나서 넣는다 · 초록인 것과 지켜지는 것은 다르다</div>
-  <div class="accbar"></div>
-  <div class="body">
-    <div class="a cols c2" style="gap:52px">
-      <div>
-        <div class="card acc"><div class="num">07</div>
-          <div class="h3" style="font-size:30px">선제 인덱스 6개를 되돌렸다</div>
-          <div class="bd">검증 질의를 보며 필요할 것 같은 인덱스를 여섯 개 미리 넣었는데, 시드 저장소 인덱스 파일 첫 줄에 이렇게 적혀 있었습니다.</div>
-          <div class="note" style="margin-top:16px;font-size:20px">보조 인덱스가 없는 것은 누락이 아니라 <b>의도</b>다. 300만 건에서 느린 질의를 직접 겪고 실행계획을 본 다음 인덱스를 넣어 <b>개선폭을 재는 것까지가 과제</b>다.</div>
-          <div class="bd sm" style="margin-top:14px"><code>EXPLAIN ANALYZE</code> 로 근거를 만든 뒤에 다시 넣겠다는 뜻입니다. <b>측정값 자체가 제출물</b>이기도 합니다.</div>
-        </div>
-      </div>
-      <div>
-        <div class="card"><div class="num">08</div>
-          <div class="h3" style="font-size:30px">안전장치를 지워 보고<br>테스트가 빨개지는지 확인한다</div>
-          <div class="bd">검증 로직에 안전장치를 넣고 테스트를 같이 붙였습니다. 나중에 확인해 보니 <b>그 안전장치를 지워도 테스트가 전부 통과</b>했습니다. 테스트가 다른 이유로 초록이었던 겁니다.</div>
-          <div class="bd sm" style="margin-top:12px">그래서 커밋 전에 안전장치를 하나씩 지워 보고, <b>의도한 테스트가 실제로 빨개지는지</b> 확인합니다. 이 방식으로 테스트 없이 들어가 있던 안전장치를 여러 개 찾아 채웠습니다.</div>
-        </div>
-        <div class="metrics" style="margin-top:30px">
-          <div class="metric"><div class="v acc">6 → 0</div><div class="l">되돌린 선제 인덱스</div></div>
-          <div class="metric"><div class="v">407</div><div class="l">테스트 · <b style="color:var(--pass)">0 실패</b></div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="a foot">파트 II 의 <b>“샤딩은 재보고 나서 결정한다”</b>와 같은 규칙입니다. 미리 넣지 않고, 재보고 나서 넣습니다</div>
-</div>
-
 <!-- 16 현재 진행 ══════════════════════════════════════════ -->
 <div class="slide">
   <div class="a mark">현재</div>
@@ -708,7 +689,7 @@ td.dim,.dim{color:var(--ink3)}
         <div class="card"><div class="h3" style="font-size:30px">관제</div>
           <div class="bd">관측 경로를 나눠<br><b>측정 오염을 막았고</b></div></div>
         <div class="card"><div class="h3" style="font-size:30px">게이트웨이</div>
-          <div class="bd">낡음의 원인을 나눠<br><b>대응을 갈랐고</b></div></div>
+          <div class="bd">정책과 현재 상태를 나눠<br><b>판정을 갈랐고</b></div></div>
         <div class="card acc"><div class="h3" style="font-size:38px">검증</div>
           <div class="bd" style="font-size:23px">배치 실패와 데이터 이상을 나눠<br><b>알람을 갈랐습니다</b></div></div>
       </div>
