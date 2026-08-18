@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>검증 배치 서버 · 4조 KAFKICK</title>
+<title>쿠폰 야~호 · 4조 KAFKICK</title>
 <link rel="preload" href="../assets/fonts/pretendard-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/pretendard-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/pretendard-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -181,7 +181,9 @@ td.dim,.dim{color:var(--ink3)}
 
 /* ── 표지 / 마무리 ──────────────────────────────────────────
    네 파트의 색을 표지에 띠로 깔아 목차보다 먼저 구조를 보여준다. */
-.cover{justify-content:center;gap:0;position:relative;overflow:hidden}
+.cover{justify-content:center;gap:0;overflow:hidden}
+/* .slide 가 이미 position:absolute 다. 여기서 position 을 다시 선언하면
+   그 absolute 를 덮어써 inset:0 이 풀리고 슬라이드 높이가 내용만큼 줄어든다. */
 .cover::after{content:"";position:absolute;right:-160px;top:-160px;width:620px;height:620px;
   border-radius:50%;background:radial-gradient(circle at 30% 30%,#F9EDEF 0%,#FBFAF7 55%,transparent 72%);z-index:0}
 .cover > *{position:relative;z-index:1}
@@ -226,8 +228,8 @@ td.dim,.dim{color:var(--ink3)}
 <!-- 01 표지 ═══════════════════════════════════════════════ -->
 <div class="slide cover">
   <div class="a eyebrow">LG유플러스 유레카 백엔드 · 종합프로젝트 멘토링</div>
-  <h1 class="a">검증 배치 서버</h1>
-  <div class="a sub">선착순 쿠폰 · 관제 · 대기열 · 검증<br>
+  <h1 class="a">쿠폰 야~호</h1>
+  <div class="a sub">대규모 트래픽 선착순 쿠폰 서비스<br>
     재고 10,000장에 동시 20,000명이 몰릴 때</div>
   <div class="a bars">
     <i style="width:96px;background:#5B6B8C"></i>
