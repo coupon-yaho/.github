@@ -938,9 +938,9 @@ api-3  p99 = 210ms  ─┘     <span class="acc">(api-1 라벨 병기)</span>
 <!-- 질문 7 검증 -->
 <div data-topic="검증" data-part="3" class="slide">
   <div class="a mark">질문 7 · 검증</div>
-  <div class="a ttl">데이터가 틀렸는데<br>아무 알람도 안 울리면 어떡하죠</div>
+  <div class="a ttl">데이터가 틀린 것과<br>배치가 실패한 것은 다른 축일까요</div>
   <div class="a lede">데이터가 틀렸다는 판정이 나와도 <b>배치는 정상 종료</b>로 처리했습니다.
-    판정을 냈으니 배치는 제 일을 한 거라고 봤습니다.</div>
+    판정을 냈으니 배치는 제 일을 다 한 거라고 봤습니다.</div>
   <div class="accbar"></div>
   <div class="body">
     <div class="a cols c2" style="gap:52px">
@@ -958,19 +958,19 @@ api-3  p99 = 210ms  ─┘     <span class="acc">(api-1 라벨 병기)</span>
       </div>
       <div>
         <div class="card acc">
-          <div class="h3" style="font-size:30px">그런데 막힙니다</div>
-          <div class="bd">운영 알람은 보통 <b>배치가 실패했는지</b>를 봅니다.
-            그러면 B는 배치가 성공이라서 <b>아무 알람도 안 울립니다.</b>
-            데이터가 틀렸는데 아무도 모르는 상태가 됩니다.</div>
+          <div class="h3" style="font-size:30px">저희가 잡은 답</div>
+          <div class="bd"><b>배치는 끝까지 완수했으므로 정상 종료</b>로 두고,
+            데이터 이상 유무에 따라 <b>알림 채널과 심각도를 다르게</b> 가져가려고 합니다.
+            잡의 성패와 데이터의 성패는 다른 축이라고 봤습니다.</div>
           <div class="lab">여쭙고 싶은 것</div>
-          <div class="bd sm">실무에서는 이 둘을 어떻게 나눠서 알리시는지 궁금합니다.
-            배치 실패와 별개로 <b>데이터 이상용 알람 채널</b>을 따로 두시는지,
-            아니면 위반 건수를 지표로 내보내고 임계치로 거시는지요.</div>
+          <div class="bd sm">이 처리가 맞는지, 아니면 <b>데이터가 틀리면 배치를 실패로 떨어뜨리는 것</b>이
+            실무의 방식인지 궁금합니다. 운영 알람이 대개 배치 실패 여부를 보기 때문에,
+            성공으로 두면 <b>묻힐 위험</b>이 있어 보입니다.</div>
         </div>
       </div>
     </div>
   </div>
-  <div class="a foot">지금은 판정만 기록에 남기고 있습니다. <b>누구에게 어떻게 알릴지는 아직 안 정했습니다</b></div>
+  <div class="a foot">잡의 성패와 데이터의 성패를 <b>다른 축</b>으로 본 판단이 맞는지가 질문의 핵심입니다</div>
 </div>
 
 <!-- 05 Q4 -->
