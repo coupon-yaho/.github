@@ -747,8 +747,30 @@ td.dim,.dim{color:var(--ink3)}
 
   /* 1920×1080 캔버스를 화면에 맞춘다 */
   var stage = $("#stage");
-  function fit(){ stage.style.transform = "scale(" + Math.min(innerWidth/1920, innerHeight/1080) + ")"; }
-  addEventListener("resize", fit); fit();
+
+  /* 1920x1080 캔버스를 화면에 맞춘다.
+     resize 이벤트 하나에만 기대면 안 된다. 전체화면 전환·브라우저 확대·
+     모니터 간 이동에서는 이벤트가 안 오거나 레이아웃보다 늦게 와서
+     스케일이 예전 값에 머물고, 그러면 슬라이드가 화면 밖으로 잘린다.
+     그래서 관측할 수 있는 경로를 전부 걸어 두고 스스로 되잡게 한다.
+     크기는 innerWidth 보다 documentElement 쪽이 스크롤바·확대에 덜 흔들린다. */
+  function fit(){
+    var w = document.documentElement.clientWidth  || innerWidth;
+    var h = document.documentElement.clientHeight || innerHeight;
+    if(!w || !h) return;
+    stage.style.transform = "scale(" + Math.min(w / 1920, h / 1080) + ")";
+  }
+
+  if(window.ResizeObserver) new ResizeObserver(fit).observe(document.documentElement);
+  addEventListener("resize", fit);
+  addEventListener("orientationchange", fit);
+  addEventListener("load", fit);
+  addEventListener("pageshow", fit);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("visibilitychange", fit);
+  if(window.visualViewport) visualViewport.addEventListener("resize", fit);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  fit();
 
   var slides = $$(".slide"), rail = $("#rail"), pg = $("#pg"), N = slides.length, idx = -1;
 
@@ -817,8 +839,14 @@ td.dim,.dim{color:var(--ink3)}
     go(idx + (e.clientX < innerWidth*0.25 ? -1 : 1));
   };
 
-  var start = parseInt((location.hash||"#1").slice(1), 10);
-  go(isNaN(start) ? 0 : start-1);
+  /* 주소창의 #번호로 바로 열 수 있다. 이미 열린 상태에서 번호만 바꿔도
+     따라가게 hashchange 를 듣는다. 없으면 새로고침해야 이동한다. */
+  function fromHash(){
+    var n = parseInt((location.hash || "#1").slice(1), 10);
+    return isNaN(n) ? 0 : n - 1;
+  }
+  addEventListener("hashchange", function(){ go(fromHash()); });
+  go(fromHash());
 })();
 </script>
 </body>
