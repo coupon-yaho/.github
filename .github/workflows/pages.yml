@@ -1,0 +1,102 @@
+# 발표 자산을 GitHub Pages 로 올립니다.
+#
+# ─────────────────────────────────────────────────────────
+# 이 리포는 두 가지 역할을 겸합니다
+# ─────────────────────────────────────────────────────────
+#   profile/README.md   조직 프로필. github.com/coupon-yaho 상단에 뜨는 소개글
+#   나머지(index.html · plan/ · assets/)   Pages 로 배포되는 발표 자산
+#
+# 그래서 "리포 전체를 올린다" 가 아니라 **올릴 것만 골라 _site 로 모아** 올립니다.
+# profile/ 과 .github/ 가 배포물에 섞이면 조직 프로필 원본이 웹에 두 번 노출됩니다.
+#
+# ─────────────────────────────────────────────────────────
+# 배포 주소
+# ─────────────────────────────────────────────────────────
+#   https://coupon-yaho.github.io/.github/
+#   https://coupon-yaho.github.io/.github/plan/
+#
+# 조직 대표 주소(https://coupon-yaho.github.io/)로 쓰려면 리포 이름이
+# `coupon-yaho.github.io` 여야 합니다. 이 리포는 `.github` 라 하위 경로로 붙습니다.
+# HTML 참조가 전부 상대경로라 하위 경로에서도 그대로 동작합니다.
+#
+# ⚠️ 최초 1회 : Settings → Pages → Source 를 "GitHub Actions" 로 바꿔야 합니다.
+#    Pages 사이트 생성은 GITHUB_TOKEN 권한 밖입니다 (organization 리포는
+#    administration:write 가 필요해 "Resource not accessible by integration" 로 막힙니다).
+
+name: Deploy site to Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'plan/**'
+      - 'assets/**'
+      - '.nojekyll'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 배포는 한 번에 하나만. 밀린 실행은 최신 것만 남긴다.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # 올릴 것만 골라 담는다. 여기 없는 건 배포되지 않는다.
+      - name: 배포물 구성
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp .nojekyll _site/ 2>/dev/null || touch _site/.nojekyll
+          cp index.html _site/
+          cp -R assets _site/
+          cp -R plan   _site/
+
+      - name: 대외비 문서가 섞이지 않았는지 확인
+        run: |
+          set -euo pipefail
+          if find _site -type f \( -name '*.md' -o -name '*.pptx' -o -name '*.docx' -o -name '*.dbml' \) | grep -q .; then
+            echo "::error title=배포물에 문서 파일::발표 자산만 두세요."
+            find _site -type f \( -name '*.md' -o -name '*.pptx' -o -name '*.docx' -o -name '*.dbml' \)
+            exit 1
+          fi
+          # profile/ 은 조직 프로필 원본이다. 배포물에 들어가면 안 된다.
+          if [ -e _site/profile ]; then
+            echo "::error title=profile 유출::_site 에 profile/ 이 들어갔습니다."
+            exit 1
+          fi
+          echo "배포 대상:"
+          find _site -type f | sort | sed 's/^/  /'
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: 주소 안내
+        run: |
+          {
+            echo "## 배포 완료"
+            echo ""
+            echo "- 랜딩 : ${{ steps.deployment.outputs.page_url }}"
+            echo "- 기획안 발표 : ${{ steps.deployment.outputs.page_url }}plan/"
+          } >> "$GITHUB_STEP_SUMMARY"
