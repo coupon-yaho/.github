@@ -154,8 +154,6 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 .divider .idx .l{font-size:23px;line-height:1.45;color:rgba(255,255,255,.78)}
 .divider .idx .l a{color:inherit;text-decoration:none}
 .divider .idx .l b{color:#fff;font-weight:700}
-.divider .idx .l u{text-decoration:none;font:700 16px/1 var(--mono);
-  letter-spacing:.06em;color:rgba(255,255,255,.45);margin-left:10px}
 .divider .wing,.divider .wm,.divider .owes{display:none}
 
 /* ── 목차 — 도면 목록(索引). 점선 리더로 시트 번호까지 이어 줍니다 ── */
@@ -891,8 +889,8 @@ svg .dn{fill:var(--ink3);font-family:var(--sans);font-size:19px;font-weight:700}
 .why3 .result b{color:var(--ink);font-weight:800}
 /* ── 목표와 버저닝 — 버전별 핵심 변화 ── */
 .verx{width:100%;height:var(--h-body);display:grid;grid-template-rows:1fr}
-.verx .stages{display:grid;grid-template-columns:repeat(5,1fr);gap:28px}
-.verx .vstep{position:relative;border-top:3px solid var(--ink);padding:26px 20px 22px;
+.verx .stages{display:grid;grid-template-columns:repeat(5,1fr);gap:28px;align-items:center}
+.verx .vstep{position:relative;min-height:380px;border-top:3px solid var(--ink);padding:24px 22px 20px;
   background:rgba(22,36,63,.025);display:flex;flex-direction:column}
 .verx .vstep.acc{border-top-color:var(--acc);background:rgba(194,86,106,.045)}
 .verx .vstep.plan{border-top-color:var(--faint);background:repeating-linear-gradient(135deg,
@@ -901,14 +899,14 @@ svg .dn{fill:var(--ink3);font-family:var(--sans);font-size:19px;font-weight:700}
   font:700 24px/1 var(--mono);color:var(--faint)}
 .verx .vstep:last-child::after{display:none}
 .verx .head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.verx .v{font:800 26px/1 var(--mono);letter-spacing:-.03em;color:var(--ink)}
+.verx .v{font:800 32px/1 var(--mono);letter-spacing:-.03em;color:var(--ink)}
 .verx .vstep.acc .v{color:var(--acc)}
-.verx .status{font:700 13px/1 var(--mono);letter-spacing:.12em;color:var(--ink3)}
+.verx .status{font:700 16px/1 var(--mono);letter-spacing:.1em;color:var(--ink3)}
 .verx .vstep.plan .status{color:var(--acc)}
-.verx h4{margin-top:48px;font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.2}
-.verx .tech{margin-top:24px;font:600 16px/1.55 var(--mono);color:var(--ink3)}
-.verx .gain{margin-top:auto;padding-top:24px;border-top:1px solid var(--rule);
-  font-size:23px;font-weight:700;line-height:1.4;color:var(--ink)}
+.verx h4{margin-top:34px;font-size:40px;font-weight:800;letter-spacing:-.04em;line-height:1.2}
+.verx .tech{margin-top:18px;font:600 20px/1.45 var(--mono);color:var(--ink3)}
+.verx .gain{margin-top:auto;padding-top:20px;border-top:1px solid var(--rule);
+  font-size:26px;font-weight:700;line-height:1.35;color:var(--ink)}
 .verx .vstep.acc .gain,.verx .vstep.plan .gain{color:var(--acc)}
 .lg2 .lgc svg{max-height:482px}
 /* ── 성능 비교 — 막대로 한눈에 · 숫자는 오른쪽에 ── */
@@ -1347,7 +1345,7 @@ svg.lg{flex:none;display:block}
   <div class="tm">3:00</div><div class="dchip">SECTION 01</div>
   <h2>설계 배경</h2>
   <div class="lead">주제를 고른 이유와 판정 기준, 최종 구조와 역할 분담까지.</div>
-  <div class="idx"><div class="g">왜</div><div class="l">주제 선정 이유 · <b>목표와 버저닝 전략</b><u>1-1 ~ 1-2</u></div><div class="g">무엇을</div><div class="l">요구사항 일곱 가지와 <b>판정 기준</b><u>1-3</u></div><div class="g">어떻게</div><div class="l">시스템 아키텍처 · 파트별 역할 · <b>데이터 모델과 검증 스키마</b> · 기술 스택<u>1-4 ~ 1-10</u></div></div>
+  <div class="idx"><div class="g">왜</div><div class="l">주제 선정 이유 · <b>목표와 버저닝 전략</b></div><div class="g">무엇을</div><div class="l">요구사항 일곱 가지와 <b>판정 기준</b></div><div class="g">어떻게</div><div class="l">시스템 아키텍처 · 파트별 역할 · <b>데이터 모델과 검증 스키마</b> · 기술 스택</div></div>
 </section>
 
 
@@ -1359,13 +1357,13 @@ svg.lg{flex:none;display:block}
     <div class="why3" style="grid-column:1/13;grid-row:1/9">
       <div class="axis">
         <div class="no">01 · TRAFFIC</div>
-        <h4>순간 집중</h4>
+        <h4>트래픽 급증</h4>
         <div class="keys">정해진 시각<br><b>한정 수량</b></div>
         <div class="desc">짧은 시간에 요청이 몰려 병목이 빠르게 드러납니다.</div>
       </div>
       <div class="axis acc">
         <div class="no">02 · CONSISTENCY</div>
-        <h4>명확한 판정</h4>
+        <h4>정합성</h4>
         <div class="keys">초과 발급 <b>0</b><br>1인 1매</div>
         <div class="desc">성공과 실패를 동일한 수치로 즉시 판정합니다.</div>
       </div>
@@ -1616,7 +1614,7 @@ svg.lg{flex:none;display:block}
   <div class="tm">3:00</div><div class="dchip">SECTION 02</div>
   <h2>단일 DB 구조의 한계</h2>
   <div class="lead">재고를 DB 안에서 세는 두 방법을 같은 축에서 비교 측정하고, 어디서 막히는지까지 확인합니다.</div>
-  <div class="idx"><div class="g">구조</div><div class="l">v1 아키텍처 — WEB · 쿠폰 서비스 · MySQL<u>2-1</u></div><div class="g">동시성</div><div class="l">락 개선 — v1.1 <b>비관적 락</b> → v1.2 <b>원자적 UPDATE</b><u>2-2 · 2-3</u></div><div class="g">비교</div><div class="l">v1 비교 — <b>v1.1 · v1.2</b><u>2-4</u></div></div>
+  <div class="idx"><div class="g">구조</div><div class="l">v1 아키텍처 — WEB · 쿠폰 서비스 · MySQL</div><div class="g">동시성</div><div class="l">락 개선 — v1.1 <b>비관적 락</b> → v1.2 <b>원자적 UPDATE</b></div><div class="g">비교</div><div class="l">v1 비교 — <b>v1.1 · v1.2</b></div></div>
 </section>
 
 <section class="slide archmax">
@@ -1692,7 +1690,7 @@ svg.lg{flex:none;display:block}
   <div class="tm">2:30</div><div class="dchip">SECTION 03</div>
   <h2>분산 구조 전환</h2>
   <div class="lead">재고를 세는 지점을 DB 밖으로 옮기고, 앞단에 대기열 게이트웨이를 세웁니다.</div>
-  <div class="idx" style="row-gap:16px"><div class="g">구조</div><div class="l">v2 아키텍처 — <b>대기열 · Redis · 쿠폰 서비스</b><u>3-1</u></div><div class="g">선점</div><div class="l">v2.1 — <b>Redis 원자 카운터</b><u>3-2</u></div><div class="g">규칙</div><div class="l">v2.2 대기열 — <b>요청 경로 · 제어 평면 · 순수 판정</b><u>3-3</u></div><div class="g">규칙</div><div class="l">진입 규칙 — <b>세 갈래 판정</b><u>3-4</u></div><div class="g">진행</div><div class="l">검증 절차 — <b>페이즈 게이트</b><u>3-5</u></div><div class="g">비교</div><div class="l">최종 비교 — <b>v1.1 · v1.2 · v2.1 · v2.2</b><u>3-6</u></div><div class="g">설계</div><div class="l">v3 — <b>선점·영속 분리</b><u>3-7</u></div></div>
+  <div class="idx" style="row-gap:16px"><div class="g">구조</div><div class="l">v2 아키텍처 — <b>대기열 · Redis · 쿠폰 서비스</b></div><div class="g">선점</div><div class="l">v2.1 — <b>Redis 원자 카운터</b></div><div class="g">규칙</div><div class="l">v2.2 대기열 — <b>요청 경로 · 제어 평면 · 순수 판정</b></div><div class="g">규칙</div><div class="l">진입 규칙 — <b>세 갈래 판정</b></div><div class="g">진행</div><div class="l">검증 절차 — <b>페이즈 게이트</b></div><div class="g">비교</div><div class="l">최종 비교 — <b>v1.1 · v1.2 · v2.1 · v2.2</b></div><div class="g">설계</div><div class="l">v3 — <b>선점·영속 분리</b></div></div>
 </section>
 
 <section class="slide archmax">
@@ -1811,7 +1809,7 @@ svg.lg{flex:none;display:block}
   <div class="tm">6:00</div><div class="dchip">SECTION 04</div>
   <h2>검증과 관제</h2>
   <div class="lead">결과가 맞는지 어떻게 확인하고, 어긋나면 어떻게 알아채는지를 항목별로 다룹니다.</div>
-  <div class="idx"><div class="g">발급 API</div><div class="l">멱등성 — 같은 요청 두 번에도 <b>쿠폰은 한 장</b><u>4-1</u></div><div class="g">배치</div><div class="l">컴포넌트 흐름 · 시드 · 결함 주입 · 집합 대조 · 재실행 결정론 · <b>이상 감지</b><u>4-2 ~ 4-7</u></div><div class="g">관제</div><div class="l">다섯 화면과 <b>지표 흐름</b><u>4-8 · 4-9</u></div></div>
+  <div class="idx"><div class="g">발급 API</div><div class="l">멱등성 — 같은 요청 두 번에도 <b>쿠폰은 한 장</b></div><div class="g">배치</div><div class="l">컴포넌트 흐름 · 시드 · 결함 주입 · 집합 대조 · 재실행 결정론 · <b>이상 감지</b></div><div class="g">관제</div><div class="l">다섯 화면과 <b>지표 흐름</b></div></div>
 </section>
 
 <section class="slide">
@@ -2033,7 +2031,7 @@ svg.lg{flex:none;display:block}
   <div class="tm">0:30</div><div class="dchip">SECTION 05</div>
   <h2>정리</h2>
   <div class="lead">동작하는 화면을 보여 주고 마칩니다.</div>
-  <div class="idx"><div class="g">보여주기</div><div class="l"><a href="https://youtu.be/XUPYpmx-kTs" target="_blank" rel="noopener noreferrer">데모 영상</a> 평상시 · 부하 · 장애 · 검증 배치<u>5-1</u></div><div class="g">질문</div><div class="l">Q &amp; A<u>5-2</u></div></div>
+  <div class="idx"><div class="g">보여주기</div><div class="l"><a href="https://youtu.be/XUPYpmx-kTs" target="_blank" rel="noopener noreferrer">데모 영상</a> 평상시 · 부하 · 장애 · 검증 배치</div><div class="g">질문</div><div class="l">Q &amp; A</div></div>
 </section>
 
 <section class="slide archmax" data-ov="데모 영상">
