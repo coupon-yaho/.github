@@ -2221,20 +2221,29 @@ if(v21){
 
 setMetricSlide('부하 테스트 결과',{
   chip:'동일 조건 실측',title:'발급 엔진 3종 실측',
-  body:`<div style="grid-column:1/13;grid-row:1/9;align-self:center">
-    <div class="mtable">
-      <div class="hd"></div><div class="hd">v1.2 · 직결</div><div class="hd acc">v2.1 · 직결</div><div class="hd">v2.2 · 대기열</div>
-      <div class="lab">처리량</div><div class="val">987<u>/s</u></div><div class="val acc">2,038<u>/s</u></div><div class="val">246<u>/s</u></div>
-      <div class="lab">2만 건 완주</div><div class="val">20.3<u>s</u></div><div class="val acc">9.8<u>s</u></div><div class="val">81.5<u>s</u></div>
-      <div class="lab">발급</div><div class="val">10,000</div><div class="val">10,000</div><div class="val">9,990</div>
-      <div class="lab">매진 거절</div><div class="val">10,000</div><div class="val">10,000</div><div class="val">6,685</div>
-      <div class="lab">429 · 정원 초과</div><div class="val">0</div><div class="val">0</div><div class="val">590</div>
-      <div class="lab">503 · 서킷 폴백</div><div class="val">0</div><div class="val">0</div><div class="val">2,735</div>
-      <div class="lab">전체 체감 · p99</div><div class="val">—</div><div class="val">—</div><div class="val">—</div>
-    </div>
-    <div class="mnote">v2.2는 요청을 바로 처리하지 않고 <b>접수 → 대기 → 입장 → 발급</b>으로 나눕니다. 처리량 246/s에는 대기 시간과 1인당 3회 요청이 포함됩니다.</div>
+  body:`<div class="perf2" style="grid-column:1/13;grid-row:1/9">
+    <div class="pbk" data-dir="higher"><div class="mt">처리량<i>높을수록 좋음</i></div><div class="rows">
+      <div class="pr" data-val="987"><span class="pv">v1.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">987<u>/s</u></b></div>
+      <div class="pr" data-val="2038"><span class="pv">v2.1</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">2,038<u>/s</u></b></div>
+      <div class="pr" data-val="246"><span class="pv">v2.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">246<u>/s</u></b></div>
+    </div><div class="tgt">v2.2는 대기 · 반복 요청 포함</div></div>
+    <div class="pbk" data-dir="lower"><div class="mt">전체 체감 · 중앙값<i>낮을수록 좋음</i></div><div class="rows">
+      <div class="pr" data-val="2600"><span class="pv">v1.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">2.60<u>s</u></b></div>
+      <div class="pr" data-val="1650"><span class="pv">v2.1</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">1.65<u>s</u></b></div>
+      <div class="pr" data-val="11000"><span class="pv">v2.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">11.00<u>s</u></b></div>
+    </div></div>
+    <div class="pbk" data-dir="lower"><div class="mt">전체 체감 · p95<i>낮을수록 좋음</i></div><div class="rows">
+      <div class="pr" data-val="2780"><span class="pv">v1.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">2.78<u>s</u></b></div>
+      <div class="pr" data-val="1870"><span class="pv">v2.1</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">1.87<u>s</u></b></div>
+      <div class="pr" data-val="13010"><span class="pv">v2.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">13.01<u>s</u></b></div>
+    </div></div>
+    <div class="pbk acc" data-dir="lower"><div class="mt">매진 응답 · 중앙값<i>낮을수록 좋음</i></div><div class="rows">
+      <div class="pr" data-val="1340"><span class="pv">v1.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">1.34<u>s</u></b></div>
+      <div class="pr" data-val="218"><span class="pv">v2.1</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">218<u>ms</u></b></div>
+      <div class="pr" data-val="2"><span class="pv">v2.2</span><div class="pt"><i></i></div><em class="pd"></em><b class="pn">2<u>ms</u></b></div>
+    </div><div class="tgt">게이트웨이에서 즉시 종결</div></div>
   </div>`,
-  foot:'동시 사용자 2,000 · 요청 20,000 · 재고 10,000 · API 1대 · 게이트웨이 1대'
+  foot:'동시 사용자 2,000 · 요청 20,000 · 재고 10,000　·　v2.2 처리량은 <b>대기와 1인당 3회 요청</b>을 포함'
 });
 
 setMetricSlide('병목 원인 분석',{
