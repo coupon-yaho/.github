@@ -1414,7 +1414,7 @@ svg.lg{flex:none;display:block}
     <div style="grid-column:1/13;grid-row:1/9;position:relative">
       <div class="archimg"><img src="assets/architecture-v2.png" alt="v2 아키텍처 — 웹 프론트엔드 · 대기열 서비스 N대 · 쿠폰 서비스 N대 · Redis · MySQL · Kafka 알림"></div>
     </div>
-    <div class="anote" style="grid-column:1/13;grid-row:8/9"><div class="an"><b>추가</b><span>대기열 서비스 · Redis Cache/Store</span></div><div class="an"><b>경계</b><span>차감은 쿠폰 서비스만 · 게이트웨이는 읽기만</span></div><div class="an"><b>다음</b><span>2-1 v1 아키텍처 → 3-1 v2.1 로 전환</span></div></div>
+    <div class="anote" style="grid-column:1/13;grid-row:8/9"><div class="an"><b>추가</b><span>대기열 서비스 · Redis Cache/Store</span></div><div class="an"><b>경계</b><span>차감은 쿠폰 서비스만 · 게이트웨이는 읽기만</span></div><div class="an"><b>다음</b><span>2-1 v1 아키텍처 → 3-1 v2 아키텍처로 전환</span></div></div>
   </div>
   <div class="foot"><div class="cap">구성 <b>WEB · 대기열 · 쿠폰 서비스 · Redis · MySQL</b>　·　출발은 v1</div><div class="of"></div></div>
 </section>
@@ -1661,12 +1661,23 @@ svg.lg{flex:none;display:block}
   <div class="tm">2:30</div><div class="dchip">SECTION 03</div>
   <h2>분산 구조 전환</h2>
   <div class="lead">재고를 세는 지점을 DB 밖으로 옮기고, 앞단에 대기열 게이트웨이를 세웁니다.</div>
-  <div class="idx"><div class="g">구조</div><div class="l">v2.1 아키텍처 — <b>Redis 원자 카운터</b><u>3-1</u></div><div class="g">규칙</div><div class="l">v2.2 대기열 — <b>요청 경로 · 제어 평면 · 순수 판정</b><u>3-2</u></div><div class="g">규칙</div><div class="l">진입 규칙 — <b>세 갈래 판정</b><u>3-3</u></div><div class="g">진행</div><div class="l">검증 절차 — <b>페이즈 게이트</b><u>3-4</u></div><div class="g">측정</div><div class="l">성능 비교 — v1.1 → <b>v2.2</b> 동일 축 측정<u>3-5</u></div><div class="g">설계</div><div class="l">v3 — <b>선점·영속 분리</b><u>3-6</u></div></div>
+  <div class="idx" style="row-gap:16px"><div class="g">구조</div><div class="l">v2 아키텍처 — <b>대기열 · Redis · 쿠폰 서비스</b><u>3-1</u></div><div class="g">선점</div><div class="l">v2.1 — <b>Redis 원자 카운터</b><u>3-2</u></div><div class="g">규칙</div><div class="l">v2.2 대기열 — <b>요청 경로 · 제어 평면 · 순수 판정</b><u>3-3</u></div><div class="g">규칙</div><div class="l">진입 규칙 — <b>세 갈래 판정</b><u>3-4</u></div><div class="g">진행</div><div class="l">검증 절차 — <b>페이즈 게이트</b><u>3-5</u></div><div class="g">측정</div><div class="l">성능 비교 — v1.1 → <b>v2.2</b> 동일 축 측정<u>3-6</u></div><div class="g">설계</div><div class="l">v3 — <b>선점·영속 분리</b><u>3-7</u></div></div>
+</section>
+
+<section class="slide archmax">
+  <div class="chip">v2 · 분산 구조</div><div class="sn">3-1</div>
+  <h2 class="title">v2 아키텍처</h2>
+  <div class="body">
+    <div style="grid-column:1/13;grid-row:1/9;position:relative">
+      <div class="archimg"><img src="assets/architecture-v2.png" alt="v2 아키텍처 — 웹 프론트엔드 · 적응형 대기열 · 쿠폰 서비스 · Redis · MySQL · Kafka 알림"></div>
+    </div>
+  </div>
+  <div class="foot"><div class="cap">적응형 대기열 → 쿠폰 서비스　·　Redis 상태 관리 · MySQL 영속화 · Kafka 알림</div><div class="of"></div></div>
 </section>
 
 <section class="slide">
-  <div class="chip">Redis 원자 카운터</div><div class="sn">3-1</div>
-  <h2 class="title">v2.1 아키텍처</h2>
+  <div class="chip">Redis 원자 카운터</div><div class="sn">3-2</div>
+  <h2 class="title">v2.1 · Redis 원자 선점</h2>
   <p class="sub">재고를 세는 지점을 DB 밖으로 옮겼습니다. 발급은 <b>선점 → 트랜잭션 → 완료 CAS</b> 세 단계로 나뉩니다.</p>
     <div class="body">
     <div class="expl" style="grid-column:1/13;grid-row:1/9">
@@ -1680,7 +1691,7 @@ svg.lg{flex:none;display:block}
 </section>
 
 <section class="slide">
-  <div class="chip">대기열 · 구성</div><div class="sn">3-2</div>
+  <div class="chip">대기열 · 구성</div><div class="sn">3-3</div>
   <h2 class="title"><span class="pre">대기열</span>구조</h2>
   <p class="sub">게이트웨이를 <b>별도 서비스로 분리한 이유</b>는 셋입니다 — 경계 · 스택 · 장애 격리.</p>
   <div class="body">
@@ -1701,7 +1712,7 @@ svg.lg{flex:none;display:block}
 </section>
 
 <section class="slide">
-  <div class="chip">입장 판정</div><div class="sn">3-3</div>
+  <div class="chip">입장 판정</div><div class="sn">3-4</div>
   <h2 class="title"><span class="pre">대기열</span>진입 규칙</h2>
   <p class="sub">판정은 <b>세 갈래</b>로만 끝납니다. 뒤의 두 갈래는 해당 조건이 하나라도 성립하면 그 갈래로 판정합니다.</p>
   <div class="body">
@@ -1728,7 +1739,7 @@ svg.lg{flex:none;display:block}
 </section>
 
 <section class="slide">
-  <div class="chip">페이즈 게이트</div><div class="sn">3-4</div>
+  <div class="chip">페이즈 게이트</div><div class="sn">3-5</div>
   <h2 class="title"><span class="pre">대기열</span>검증 진행</h2>
   <p class="sub">페이즈마다 <b>넘어야 할 기준 수치</b>를 먼저 정했고, 그 기준을 넘지 못하면 다음 페이즈를 시작하지 않았습니다. <b>일곱 번째 페이즈까지 통과했습니다.</b></p>
   <div class="body">
@@ -1743,7 +1754,7 @@ svg.lg{flex:none;display:block}
 </section>
 
 <section class="slide">
-  <div class="chip">v1.1 → v2.2</div><div class="sn">3-5</div>
+  <div class="chip">v1.1 → v2.2</div><div class="sn">3-6</div>
   <h2 class="title">성능 비교</h2>
   <p class="sub">같은 Locust 시나리오 · 동시 20,000 · 2 vCPU 단일 노드. 조건을 고정하고 <b>재고를 다루는 방식만</b> 바꿔 측정했습니다.</p>
   <div class="body">
@@ -1753,7 +1764,7 @@ svg.lg{flex:none;display:block}
 </section>
 
 <section class="slide archmax">
-  <div class="chip">v3 · 설계</div><div class="sn">3-6</div>
+  <div class="chip">v3 · 설계</div><div class="sn">3-7</div>
   <h2 class="title"><span class="pre">v3</span>선점·영속 분리 <span style="font-weight:700;color:var(--ink3);font-size:.5em;letter-spacing:0">설계</span></h2>
   <p class="sub">발급 확정은 곧바로 응답하고, <b>DB 쓰기는 이벤트로 넘깁니다.</b> 설계와 이벤트 스키마까지 마쳤고 영속 소비자는 아직 없습니다.</p>
   <div class="body">
