@@ -4,7 +4,7 @@
 # 이 리포는 두 가지 역할을 겸합니다
 # ─────────────────────────────────────────────────────────
 #   profile/README.md   조직 프로필. github.com/coupon-yaho 상단에 뜨는 소개글
-#   나머지(index.html · plan/ · mentoring/ · mentoring2/ · assets/)   Pages 로 배포되는 발표 자산
+#   나머지(index.html · plan/ · mentoring/ · mentoring2/ · final/ · assets/)   Pages 로 배포되는 발표 자산
 #
 # 그래서 "리포 전체를 올린다" 가 아니라 **올릴 것만 골라 _site 로 모아** 올립니다.
 # profile/ 과 .github/ 가 배포물에 섞이면 조직 프로필 원본이 웹에 두 번 노출됩니다.
@@ -16,6 +16,7 @@
 #   https://coupon-yaho.github.io/.github/plan/
 #   https://coupon-yaho.github.io/.github/mentoring/
 #   https://coupon-yaho.github.io/.github/mentoring2/
+#   https://coupon-yaho.github.io/.github/final/
 #
 # 조직 대표 주소(https://coupon-yaho.github.io/)로 쓰려면 리포 이름이
 # `coupon-yaho.github.io` 여야 합니다. 이 리포는 `.github` 라 하위 경로로 붙습니다.
@@ -35,6 +36,7 @@ on:
       - 'plan/**'
       - 'mentoring/**'
       - 'mentoring2/**'
+      - 'final/**'
       - 'assets/**'
       - '.nojekyll'
       - '.github/workflows/pages.yml'
@@ -72,6 +74,7 @@ jobs:
           cp -R plan   _site/
           cp -R mentoring  _site/
           cp -R mentoring2 _site/
+          cp -R final _site/
 
       - name: 대외비 문서가 섞이지 않았는지 확인
         run: |
@@ -107,4 +110,5 @@ jobs:
             echo "- 기획안 발표 : ${{ steps.deployment.outputs.page_url }}plan/"
             echo "- 1차 멘토링 : ${{ steps.deployment.outputs.page_url }}mentoring/"
             echo "- 2차 멘토링 : ${{ steps.deployment.outputs.page_url }}mentoring2/"
+            echo "- 최종 발표 : ${{ steps.deployment.outputs.page_url }}final/"
           } >> "$GITHUB_STEP_SUMMARY"
