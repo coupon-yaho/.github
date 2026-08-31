@@ -10,7 +10,7 @@ index.html            발표 자산 랜딩
 plan/index.html       기획안 발표 (2026.08.11)
 mentoring/index.html  1차 멘토링 발표 (2026.08.18)
 mentoring2/index.html 2차 멘토링 발표 (2026.08.25)
-final/index.html       최종 발표 (41장 · 발표 20분)
+final/index.html       최종 발표 (40장 · 발표 20분)
 assets/               Pretendard 서브셋 폰트 3종 · 로고
 .github/workflows/    Pages 배포
 ```
