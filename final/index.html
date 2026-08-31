@@ -2200,6 +2200,8 @@ setMetricSlide('부하 테스트 결과',{
       <div class="hd"></div><div class="hd">v1.1 · 비관적 락</div><div class="hd acc">v1.2 · 원자 UPDATE</div>
       <div class="lab">처리량</div><div class="val">622<u>/s</u></div><div class="val acc">680<u>/s</u></div>
       <div class="lab">완주 시간</div><div class="val">32.1<u>s</u></div><div class="val acc">29.4<u>s</u></div>
+      <div class="lab">발급 p99</div><div class="val">5,916<u>ms</u></div><div class="val acc">4,474<u>ms</u></div>
+      <div class="lab">매진 p99</div><div class="val">5,294<u>ms</u></div><div class="val acc">3,995<u>ms</u></div>
       <div class="lab">발급</div><div class="val">10,000</div><div class="val acc">10,000</div>
       <div class="lab">매진</div><div class="val">10,000</div><div class="val acc">10,000</div>
     </div>
@@ -2214,12 +2216,14 @@ setMetricSlide('성능 비교',{
       <div class="hd"></div><div class="hd">v1.1</div><div class="hd">v1.2</div><div class="hd acc">v2.1</div><div class="hd">v2.2</div>
       <div class="lab">처리량</div><div class="val">622<u>/s</u></div><div class="val">680<u>/s</u></div><div class="val acc">1,430<u>/s</u></div><div class="val">99<u>/s</u></div>
       <div class="lab">완주 시간</div><div class="val">32.1<u>s</u></div><div class="val">29.4<u>s</u></div><div class="val acc">14.0<u>s</u></div><div class="val">202.0<u>s</u></div>
+      <div class="lab">발급 p99</div><div class="val">5,916<u>ms</u></div><div class="val">4,474<u>ms</u></div><div class="val acc">2,700<u>ms</u></div><div class="val">40.01<u>s</u></div>
+      <div class="lab">매진 p99</div><div class="val">5,294<u>ms</u></div><div class="val">3,995<u>ms</u></div><div class="val acc">2,241<u>ms</u></div><div class="val">40.01<u>s</u></div>
       <div class="lab">발급</div><div class="val">10,000</div><div class="val">10,000</div><div class="val acc">10,000</div><div class="val">10,000</div>
       <div class="lab">매진</div><div class="val">10,000</div><div class="val">10,000</div><div class="val acc">10,000</div><div class="val">6,771</div>
     </div>
-    <div class="qpath"><div class="tag">v2.2 지연 분해</div><div class="step"><span>접수</span><b>입력 예정</b><p>첫 요청 → 202</p></div><div class="step acc"><span>대기·인지 지연</span><b>입력 예정</b><p>입장 판정 → 다음 폴링</p></div><div class="step"><span>입장 후 발급</span><b>입력 예정</b><p>입장권 → 201</p></div></div>
+    <div class="qpath"><div class="tag">v2.2 구간 p99</div><div class="step"><span>접수</span><b>671<small>ms</small></b><p>첫 요청 → 202</p></div><div class="step acc"><span>줄 대기</span><b>40.00<small>s</small></b><p>인지 지연 포함</p></div><div class="step"><span>발급</span><b>245<small>ms</small></b><p>입장권 → 201</p></div></div>
   </div>`,
-  foot:'네 버전 동일 조건 비교　·　처리량 · 완주 시간 · 발급 · 매진'
+  foot:'네 버전 동일 조건 비교　·　처리량 · 완주 시간 · 발급·매진 p99 · 발급 · 매진'
 });
 
 /* ── 기술 스택 장표 — 기존 로고를 네 묶음으로 재배치 ── */
