@@ -1095,6 +1095,28 @@ svg .dn{fill:var(--ink3);font-family:var(--sans);font-size:19px;font-weight:700}
 .stack .note b{color:var(--ink);font-weight:800}
 svg.lg{flex:none;display:block}
 
+/* ── 기술 스택 — 한 장 2 × 2 로고 보드 ── */
+.stack.techboard{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  gap:24px 30px;width:100%;height:100%;align-self:stretch}
+.stack.techboard .g{min-width:0;border:2px solid #B6C2CE;border-top-width:2px;border-radius:24px;
+  padding:18px 24px 16px;background:rgba(255,255,255,.7)}
+.stack.techboard .g.acc{border-color:#B6C2CE}
+.stack.techboard .g .k{font:800 18px/1 var(--sans);letter-spacing:-.02em;color:var(--ink)}
+.stack.techboard .g.acc .k{color:var(--ink)}
+.stack.techboard .items{margin-top:14px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  align-items:start;align-content:start;gap:12px 10px}
+.stack.techboard .g[data-stack="infra"] .items{grid-template-columns:repeat(8,minmax(0,1fr))}
+.stack.techboard .g[data-stack="collab"] .items{grid-template-columns:repeat(7,minmax(0,1fr))}
+.stack.techboard .it{min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.stack.techboard .it::before{content:"";position:absolute;width:72px;height:72px;border-radius:50%;
+  border:1.5px solid #D3D9DF;background:#fff;box-shadow:0 2px 8px rgba(22,36,63,.12)}
+.stack.techboard .it{position:relative;padding-top:9px}
+.stack.techboard .it svg.lg{position:relative;width:54px!important;height:54px!important;z-index:1;
+  margin-bottom:9px;padding:7px;box-sizing:border-box}
+.stack.techboard .it b{display:block;max-width:100%;font-size:14px;line-height:1.15;font-weight:700;
+  color:var(--ink2);white-space:normal;word-break:keep-all}
+.stack.techboard .it i{display:none}
+
 
 /* ── 배치 실행 결과 자리 (수치는 실행 후 채웁니다) ── */
 .runres{display:grid;grid-template-columns:repeat(4,1fr);gap:0 34px;
@@ -2118,8 +2140,52 @@ addEventListener('keydown',e=>{
   if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(i-1);}
   if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1); });
 
-
-
+/* ── 기술 스택 장표 — 기존 로고를 네 묶음으로 재배치 ── */
+const stackTitle=[...document.querySelectorAll('.slide .title')]
+  .find(el=>el.textContent.trim()==='기술 스택과 협업');
+if(stackTitle){
+  const slide=stackTitle.closest('.slide');
+  const board=slide.querySelector('.stack');
+  const allItems=[...board.querySelectorAll('.it')];
+  const byName=new Map(allItems.map(item=>[item.querySelector('b')?.textContent.trim(),item]));
+  const groups=[
+    ['backend','백엔드',['Java 21','Spring Boot','Spring Batch','WebFlux','Gradle']],
+    ['infra','인프라 · 유틸리티',['MySQL','Redis','Kafka','Docker','NGINX','Prometheus','Locust','Python']],
+    ['frontend','프론트엔드',['React','TypeScript','Vite','React Query','Tailwind']],
+    ['collab','협업',['Jira','Confluence','Slack','GitHub','GitHub Actions','CodeRabbit','Qodo Merge']]
+  ];
+  stackTitle.textContent='기술 스택';
+  slide.querySelector('.chip').textContent='TECH STACK';
+  slide.querySelector('.sub')?.remove();
+  board.className='stack techboard';
+  board.removeAttribute('style');
+  board.style.gridColumn='1/13';
+  board.style.gridRow='1/9';
+  board.replaceChildren(...groups.map(([key,label,names],index)=>{
+    const group=document.createElement('div');
+    group.className='g'+(index===1?' acc':'');
+    group.dataset.stack=key;
+    const heading=document.createElement('div');
+    heading.className='k'; heading.textContent=label;
+    const items=document.createElement('div'); items.className='items';
+    names.forEach(name=>{
+      const item=byName.get(name) || [...byName.entries()].find(([n])=>n.startsWith(name))?.[1];
+      if(item){
+        const title=item.querySelector('b');
+        if(title){
+          const labels={
+            'Docker':'Docker Compose'
+          };
+          title.textContent=labels[title.textContent.trim()] || title.textContent.trim();
+        }
+        items.append(item);
+      }
+    });
+    group.append(heading,items);
+    return group;
+  }));
+  slide.querySelector('.foot .cap').textContent='BACKEND · INFRASTRUCTURE & UTILITY · FRONTEND · COLLABORATION';
+}
 
 fit(); show(0);
 </script>
