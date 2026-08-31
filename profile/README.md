@@ -174,6 +174,17 @@ Redis Lua로 재고를 원자적으로 선점하고, 대기열 서비스가 백�
 
 ---
 
+## 📂 저장소 안내
+
+| 저장소 | 역할 |
+|---|---|
+| [`cy-fe`](https://github.com/coupon-yaho/cy-fe) | 프론트엔드 |
+| [`cy-be`](https://github.com/coupon-yaho/cy-be) | 쿠폰 백엔드·배치 |
+| [`cy-waiting`](https://github.com/coupon-yaho/cy-waiting) | 적응형 대기열 |
+| [`cy-seed-data-generator`](https://github.com/coupon-yaho/cy-seed-data-generator) | 대용량 시드·검증 데이터 생성 |
+
+---
+
 ## 🧑‍💻 팀원 소개
 
 | 이름 | 담당 영역 | 주요 기여 |
