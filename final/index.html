@@ -1154,6 +1154,41 @@ svg.lg{flex:none;display:block}
   font-size:23px;font-weight:700;line-height:1.25;color:var(--ink)}
 .parts .pt .d{margin-top:auto;padding-top:26px;font-size:20px;line-height:1.5;color:var(--ink2)}
 .parts .pt .d b{color:var(--ink);font-weight:800}
+/* ── 발급 엔진 3종 실측 ── */
+.mtable{display:grid;grid-template-columns:250px repeat(3,1fr);width:100%;align-self:center;
+  border-top:3px solid var(--ink);border-bottom:2px solid var(--ink)}
+.mtable > div{min-width:0;padding:15px 22px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;text-align:center}
+.mtable > div:nth-last-child(-n+4){border-bottom:0}
+.mtable .hd{background:rgba(22,36,63,.04);font:800 19px/1.2 var(--sans);color:var(--ink)}
+.mtable .hd.acc{color:var(--acc)}
+.mtable .lab{justify-content:flex-start;text-align:left;font:700 16px/1.2 var(--mono);
+  letter-spacing:.08em;color:var(--ink3)}
+.mtable .val{font:800 28px/1 var(--sans);letter-spacing:-.035em;color:var(--ink)}
+.mtable .val.acc{color:var(--acc)}
+.mtable .val u{text-decoration:none;font-size:16px;font-weight:700;color:var(--ink3);margin-left:4px}
+.mnote{margin-top:20px;border-left:5px solid var(--acc);padding:8px 0 8px 20px;
+  font-size:20px;line-height:1.5;color:var(--ink2)}
+.mnote b{color:var(--ink);font-weight:800}
+.qpath{margin-top:24px;display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:16px;align-items:stretch}
+.qpath .tag{display:flex;align-items:center;font:800 18px/1.3 var(--mono);letter-spacing:.08em;color:var(--acc)}
+.qpath .step{border-top:3px solid var(--ink);padding:16px 18px;background:rgba(22,36,63,.025)}
+.qpath .step.acc{border-top-color:var(--acc)}
+.qpath .step span{display:block;font:700 15px/1 var(--mono);letter-spacing:.12em;color:var(--ink3)}
+.qpath .step b{display:block;margin-top:12px;font:800 40px/1 var(--sans);letter-spacing:-.04em;color:var(--ink)}
+.qpath .step.acc b{color:var(--acc)}
+.qpath .step p{margin-top:9px;font-size:17px;line-height:1.35;color:var(--ink2)}
+.score3{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;width:100%;height:100%}
+.score3 .eng{border-top:4px solid var(--ink);padding:24px 22px 18px;background:rgba(22,36,63,.025)}
+.score3 .eng.acc{border-top-color:var(--acc)}
+.score3 .eng h3{font:800 30px/1 var(--sans);letter-spacing:-.035em}
+.score3 .eng .mode{margin-top:9px;font:700 15px/1 var(--mono);letter-spacing:.12em;color:var(--ink3)}
+.score3 .eng .ks{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:22px 18px}
+.score3 .eng .ks span{display:block;font:700 14px/1.2 var(--mono);letter-spacing:.08em;color:var(--ink3)}
+.score3 .eng .ks b{display:block;margin-top:8px;font:800 32px/1 var(--sans);letter-spacing:-.04em;color:var(--ink)}
+.score3 .eng.acc .ks b.hot{color:var(--acc)}
+.score3 .eng .ks b u{text-decoration:none;font-size:15px;font-weight:700;color:var(--ink3);margin-left:3px}
+.score3 .eng .warn{margin-top:24px;border-top:1px solid var(--rule);padding-top:15px;font-size:17px;line-height:1.45;color:var(--ink2)}
 /* ── 알림 · 규칙 분류와 실제 전달 화면 ── */
 .alr{display:grid;grid-template-columns:4.2fr 7.8fr;gap:0 62px;width:100%;height:100%;min-height:0}
 .alr .tax{min-height:0;display:flex;flex-direction:column;border-top:2.5px solid var(--acc);padding-top:22px}
@@ -1557,7 +1592,7 @@ svg.lg{flex:none;display:block}
   <div class="tm">3:00</div><div class="dchip">SECTION 02</div>
   <h2>단일 DB 구조의 한계</h2>
   <div class="lead">재고를 DB 안에서 세는 두 방법을 같은 축에서 비교 측정하고, 어디서 막히는지까지 확인합니다.</div>
-  <div class="idx"><div class="g">구조</div><div class="l">v1 아키텍처 — WEB · 쿠폰 서비스 · MySQL<u>2-1</u></div><div class="g">동시성</div><div class="l">락 개선 — v1.1 <b>비관적 락</b> → v1.2 <b>원자적 UPDATE</b><u>2-2 · 2-3</u></div><div class="g">측정</div><div class="l">측정과 분석 — 부하 테스트 결과 · <b>병목 원인 분석</b><u>2-4 · 2-5</u></div></div>
+  <div class="idx"><div class="g">구조</div><div class="l">v1 아키텍처 — WEB · 쿠폰 서비스 · MySQL<u>2-1</u></div><div class="g">동시성</div><div class="l">락 개선 — v1.1 <b>비관적 락</b> → v1.2 <b>원자적 UPDATE</b><u>2-2 · 2-3</u></div><div class="g">측정</div><div class="l">최종 실측 — 발급 엔진 3종 · <b>지연 구간 분석</b><u>2-4 · 2-5</u></div></div>
 </section>
 
 <section class="slide archmax">
@@ -1661,7 +1696,7 @@ svg.lg{flex:none;display:block}
   <div class="tm">2:30</div><div class="dchip">SECTION 03</div>
   <h2>분산 구조 전환</h2>
   <div class="lead">재고를 세는 지점을 DB 밖으로 옮기고, 앞단에 대기열 게이트웨이를 세웁니다.</div>
-  <div class="idx" style="row-gap:16px"><div class="g">구조</div><div class="l">v2 아키텍처 — <b>대기열 · Redis · 쿠폰 서비스</b><u>3-1</u></div><div class="g">선점</div><div class="l">v2.1 — <b>Redis 원자 카운터</b><u>3-2</u></div><div class="g">규칙</div><div class="l">v2.2 대기열 — <b>요청 경로 · 제어 평면 · 순수 판정</b><u>3-3</u></div><div class="g">규칙</div><div class="l">진입 규칙 — <b>세 갈래 판정</b><u>3-4</u></div><div class="g">진행</div><div class="l">검증 절차 — <b>페이즈 게이트</b><u>3-5</u></div><div class="g">측정</div><div class="l">성능 비교 — v1.1 → <b>v2.2</b> 동일 축 측정<u>3-6</u></div><div class="g">설계</div><div class="l">v3 — <b>선점·영속 분리</b><u>3-7</u></div></div>
+  <div class="idx" style="row-gap:16px"><div class="g">구조</div><div class="l">v2 아키텍처 — <b>대기열 · Redis · 쿠폰 서비스</b><u>3-1</u></div><div class="g">선점</div><div class="l">v2.1 — <b>Redis 원자 카운터</b><u>3-2</u></div><div class="g">규칙</div><div class="l">v2.2 대기열 — <b>요청 경로 · 제어 평면 · 순수 판정</b><u>3-3</u></div><div class="g">규칙</div><div class="l">진입 규칙 — <b>세 갈래 판정</b><u>3-4</u></div><div class="g">진행</div><div class="l">검증 절차 — <b>페이즈 게이트</b><u>3-5</u></div><div class="g">측정</div><div class="l">성능 비교 — <b>v1.2 · v2.1 · v2.2</b><u>3-6</u></div><div class="g">설계</div><div class="l">v3 — <b>선점·영속 분리</b><u>3-7</u></div></div>
 </section>
 
 <section class="slide archmax">
@@ -2150,6 +2185,82 @@ addEventListener('keydown',e=>{
   if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();show(i+1);}
   if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(i-1);}
   if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1); });
+
+/* ── 최종 실측값 — v1.2 · v2.1 · v2.2 ── */
+const metricSlide=title=>[...document.querySelectorAll('.slide')].find(slide=>
+  slide.querySelector('.title')?.textContent.replace(/\s+/g,' ').trim()===title);
+const setMetricSlide=(before,{chip,title,body,foot})=>{
+  const slide=metricSlide(before); if(!slide) return null;
+  if(chip) slide.querySelector('.chip').textContent=chip;
+  if(title) slide.querySelector('.title').textContent=title;
+  slide.querySelector('.sub')?.remove();
+  if(body) slide.querySelector('.body').innerHTML=body;
+  if(foot) slide.querySelector('.foot .cap').innerHTML=foot;
+  return slide;
+};
+
+const v11=metricSlide('v1.1 · 비관적 락');
+if(v11){
+  v11.querySelector('.chip').textContent='기존 기준';
+  const labels=v11.querySelectorAll('.met .l');
+  if(labels[0]) labels[0].textContent='P50 · 동시 200';
+  v11.querySelector('.foot .cap').innerHTML='P50 <b>1,012ms</b> · 동시 200 · 처리량 162~198/s';
+}
+
+const v12=metricSlide('v1.2 · 원자적 UPDATE');
+if(v12){
+  v12.querySelector('.met').innerHTML='<div><div class="l">처리량</div><div class="v">987<u>/s</u></div></div><div><div class="l">전체 중앙값</div><div class="v sm">2.60<u>s</u></div></div><div><div class="l">매진 중앙값</div><div class="v sm">1.34<u>s</u></div></div>';
+  v12.querySelector('.foot .cap').innerHTML='2만 건 완주 <b>20.3초</b> · 발급 10,000 · 초과 발급 0';
+}
+
+const v21=metricSlide('v2.1 · Redis 원자 선점');
+if(v21){
+  v21.querySelector('.met').innerHTML='<div><div class="l">처리량</div><div class="v">2,038<u>/s</u></div></div><div><div class="l">전체 중앙값</div><div class="v sm">1.65<u>s</u></div></div><div><div class="l">매진 중앙값</div><div class="v sm">218<u>ms</u></div></div>';
+  v21.querySelector('.foot .cap').innerHTML='v1.2 대비 처리량 <b>2.06배</b> · 매진 응답 <b>6.1배</b> 단축 · 초과 발급 0';
+}
+
+setMetricSlide('부하 테스트 결과',{
+  chip:'동일 조건 실측',title:'발급 엔진 3종 실측',
+  body:`<div style="grid-column:1/13;grid-row:1/9;align-self:center">
+    <div class="mtable">
+      <div class="hd"></div><div class="hd">v1.2 · 직결</div><div class="hd acc">v2.1 · 직결</div><div class="hd">v2.2 · 대기열</div>
+      <div class="lab">처리량</div><div class="val">987<u>/s</u></div><div class="val acc">2,038<u>/s</u></div><div class="val">246<u>/s</u></div>
+      <div class="lab">2만 건 완주</div><div class="val">20.3<u>s</u></div><div class="val acc">9.8<u>s</u></div><div class="val">81.5<u>s</u></div>
+      <div class="lab">발급</div><div class="val">10,000</div><div class="val">10,000</div><div class="val">9,990</div>
+      <div class="lab">매진 거절</div><div class="val">10,000</div><div class="val">10,000</div><div class="val">6,685</div>
+      <div class="lab">429 · 정원 초과</div><div class="val">0</div><div class="val">0</div><div class="val">590</div>
+      <div class="lab">503 · 서킷 폴백</div><div class="val">0</div><div class="val">0</div><div class="val">2,735</div>
+      <div class="lab">오류</div><div class="val">0</div><div class="val">0</div><div class="val">0</div>
+    </div>
+    <div class="mnote">v2.2는 요청을 바로 처리하지 않고 <b>접수 → 대기 → 입장 → 발급</b>으로 나눕니다. 처리량 246/s에는 대기 시간과 1인당 3회 요청이 포함됩니다.</div>
+  </div>`,
+  foot:'동시 사용자 2,000 · 요청 20,000 · 재고 10,000 · API 1대 · 게이트웨이 1대'
+});
+
+setMetricSlide('병목 원인 분석',{
+  chip:'지연 구간',title:'무엇을 기다렸나',
+  body:`<div style="grid-column:1/13;grid-row:1/9;align-self:center">
+    <div class="mtable">
+      <div class="hd"></div><div class="hd">v1.2 · 직결</div><div class="hd acc">v2.1 · 직결</div><div class="hd">v2.2 · 대기열</div>
+      <div class="lab">전체 체감 · 중앙값</div><div class="val">2.60<u>s</u></div><div class="val acc">1.65<u>s</u></div><div class="val">11.00<u>s</u></div>
+      <div class="lab">전체 체감 · p95</div><div class="val">2.78<u>s</u></div><div class="val acc">1.87<u>s</u></div><div class="val">13.01<u>s</u></div>
+      <div class="lab">매진 응답 · 중앙값</div><div class="val">1.34<u>s</u></div><div class="val acc">218<u>ms</u></div><div class="val acc">2<u>ms</u></div>
+      <div class="lab">매진 응답 · p95</div><div class="val">2.67<u>s</u></div><div class="val">1.36<u>s</u></div><div class="val">12.01<u>s</u></div>
+    </div>
+    <div class="qpath"><div class="tag">v2.2 지연 분해</div><div class="step"><span>접수</span><b>1ms</b><p>첫 요청 → 202</p></div><div class="step acc"><span>대기 · 인지 지연</span><b>10.00s</b><p>이미 입장됐지만 다음 폴링까지 대기</p></div><div class="step"><span>입장 후 발급</span><b>4ms</b><p>입장권 → 201</p></div></div>
+  </div>`,
+  foot:'v2.2 체감 11초 중 <b>10초가 인지 지연</b> · 발급 자체는 4ms · 매진 즉시 응답은 2ms'
+});
+
+setMetricSlide('성능 비교',{
+  chip:'v1.2 · v2.1 · v2.2',title:'최종 성능 비교',
+  body:`<div class="score3" style="grid-column:1/13;grid-row:1/9">
+    <div class="eng"><h3>v1.2</h3><div class="mode">DB 원자적 UPDATE</div><div class="ks"><div><span>처리량</span><b>987<u>/s</u></b></div><div><span>전체 중앙값</span><b>2.60<u>s</u></b></div><div><span>매진 중앙값</span><b>1.34<u>s</u></b></div><div><span>발급</span><b>10,000</b></div></div><div class="warn">정확성은 지켰지만 재고 행 경합이 처리량을 제한합니다.</div></div>
+    <div class="eng acc"><h3>v2.1</h3><div class="mode">Redis 선점 · 직결</div><div class="ks"><div><span>처리량</span><b class="hot">2,038<u>/s</u></b></div><div><span>전체 중앙값</span><b>1.65<u>s</u></b></div><div><span>매진 중앙값</span><b class="hot">218<u>ms</u></b></div><div><span>발급</span><b>10,000</b></div></div><div class="warn">v1.2 대비 처리량 2.06배 · 매진 응답 6.1배 단축.</div></div>
+    <div class="eng"><h3>v2.2</h3><div class="mode">적응형 대기열</div><div class="ks"><div><span>처리량</span><b>246<u>/s</u></b></div><div><span>전체 중앙값</span><b>11.00<u>s</u></b></div><div><span>입장 후 발급</span><b>4<u>ms</u></b></div><div><span>매진 중앙값</span><b>2<u>ms</u></b></div></div><div class="warn">처리량에는 대기와 1인당 3회 요청이 포함됩니다. 429 590 · 503 2,735 · 발급 9,990.</div></div>
+  </div>`,
+  foot:'같은 조건에서 세 경로 비교 · 초과 발급 0 · v2.2는 <b>보호와 대기</b>를 포함하므로 처리량을 직결 경로와 같은 의미로 읽지 않음'
+});
 
 /* ── 기술 스택 장표 — 기존 로고를 네 묶음으로 재배치 ── */
 const stackTitle=[...document.querySelectorAll('.slide .title')]
