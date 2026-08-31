@@ -1095,25 +1095,25 @@ svg .dn{fill:var(--ink3);font-family:var(--sans);font-size:19px;font-weight:700}
 .stack .note b{color:var(--ink);font-weight:800}
 svg.lg{flex:none;display:block}
 
-/* ── 기술 스택 — 한 장 2 × 2 로고 보드 ── */
-.stack.techboard{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
-  gap:24px 30px;width:100%;height:100%;align-self:stretch}
-.stack.techboard .g{min-width:0;border:2px solid #B6C2CE;border-top-width:2px;border-radius:24px;
-  padding:18px 24px 16px;background:rgba(255,255,255,.7)}
+/* ── 기술 스택 — 한 장 4단 로고 보드 ── */
+.stack.techboard{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(4,1fr);
+  gap:14px;width:100%;height:100%;align-self:stretch}
+.stack.techboard .g{min-width:0;border:2px solid #B6C2CE;border-top-width:2px;border-radius:20px;
+  padding:14px 24px;display:grid;grid-template-columns:210px 1fr;align-items:center;
+  background:rgba(255,255,255,.7)}
 .stack.techboard .g.acc{border-color:#B6C2CE}
-.stack.techboard .g .k{font:800 18px/1 var(--sans);letter-spacing:-.02em;color:var(--ink)}
+.stack.techboard .g .k{font:800 22px/1.2 var(--sans);letter-spacing:-.03em;color:var(--ink)}
 .stack.techboard .g.acc .k{color:var(--ink)}
-.stack.techboard .items{margin-top:14px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
-  align-items:start;align-content:start;gap:12px 10px}
+.stack.techboard .items{margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  align-items:center;align-content:center;gap:8px 16px}
 .stack.techboard .g[data-stack="infra"] .items{grid-template-columns:repeat(8,minmax(0,1fr))}
 .stack.techboard .g[data-stack="collab"] .items{grid-template-columns:repeat(7,minmax(0,1fr))}
 .stack.techboard .it{min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
-.stack.techboard .it::before{content:"";position:absolute;width:72px;height:72px;border-radius:50%;
-  border:1.5px solid #D3D9DF;background:#fff;box-shadow:0 2px 8px rgba(22,36,63,.12)}
-.stack.techboard .it{position:relative;padding-top:9px}
-.stack.techboard .it svg.lg{position:relative;width:54px!important;height:54px!important;z-index:1;
-  margin-bottom:9px;padding:7px;box-sizing:border-box}
-.stack.techboard .it b{display:block;max-width:100%;font-size:14px;line-height:1.15;font-weight:700;
+.stack.techboard .it::before{display:none}
+.stack.techboard .it{position:relative;padding:0}
+.stack.techboard .it svg.lg{position:relative;width:76px!important;height:76px!important;z-index:1;
+  margin:0;padding:0;box-sizing:border-box}
+.stack.techboard .it b{display:block;max-width:100%;font-size:15px;line-height:1.15;font-weight:700;
   color:var(--ink2);white-space:normal;word-break:keep-all}
 .stack.techboard .it i{display:none}
 
