@@ -1438,7 +1438,7 @@ svg.lg{flex:none;display:block}
       </div>
       <div class="c ">
         <div class="hd"><span class="own">대기열</span></div>
-        <h4>평시 무대기</h4>
+        <h4>평시 즉시 진입</h4>
         <div class="m">실부하에서 대기열 등록 0건</div>
       </div>
       <div class="c wait">
@@ -2194,30 +2194,32 @@ if(v21){
 }
 
 setMetricSlide('부하 테스트 결과',{
-  chip:'비교표 · 실측 반영',title:'v1.1 ↔ v1.2 비교',
+  chip:'비교표 · 실측',title:'v1.1 ↔ v1.2 비교',
   body:`<div style="grid-column:1/13;grid-row:1/9;align-self:center">
     <div class="mtable m2">
       <div class="hd"></div><div class="hd">v1.1 · 비관적 락</div><div class="hd acc">v1.2 · 원자 UPDATE</div>
-      <div class="lab">처리량</div><div class="val">909<u>/s</u></div><div class="val acc">601<u>/s</u></div>
-      <div class="lab">2만 건 완주</div><div class="val">22.0<u>s</u></div><div class="val acc">33.3<u>s</u></div>
-      ${['전체 체감 중앙값','전체 체감 p95','매진 응답 중앙값','초과 발급'].map(label=>`<div class="lab">${label}</div><div class="val pending">입력 예정</div><div class="val pending">입력 예정</div>`).join('')}
+      <div class="lab">처리량</div><div class="val">622<u>/s</u></div><div class="val acc">680<u>/s</u></div>
+      <div class="lab">완주 시간</div><div class="val">32.1<u>s</u></div><div class="val acc">29.4<u>s</u></div>
+      <div class="lab">발급</div><div class="val">10,000</div><div class="val acc">10,000</div>
+      <div class="lab">매진</div><div class="val">10,000</div><div class="val acc">10,000</div>
     </div>
   </div>`,
-  foot:'처리량 · 완주 시간 실측 반영 · 나머지 수치 입력 예정'
+  foot:'v1.1 · v1.2 동일 조건 비교　·　처리량 · 완주 시간 · 발급 · 매진'
 });
 
 setMetricSlide('성능 비교',{
-  chip:'4개 엔진 · 1차 실측',title:'최종 성능 비교',
+  chip:'4개 엔진 · 실측',title:'최종 성능 비교',
   body:`<div style="grid-column:1/13;grid-row:1/9;align-self:center">
     <div class="mtable m4">
       <div class="hd"></div><div class="hd">v1.1</div><div class="hd">v1.2</div><div class="hd acc">v2.1</div><div class="hd">v2.2</div>
-      <div class="lab">처리량</div><div class="val">909<u>/s</u></div><div class="val">601<u>/s</u></div><div class="val acc">1,304<u>/s</u></div><div class="val">216<u>/s</u></div>
-      <div class="lab">2만 건 완주</div><div class="val">22.0<u>s</u></div><div class="val">33.3<u>s</u></div><div class="val acc">15.3<u>s</u></div><div class="val">92.4<u>s</u></div>
-      ${['전체 체감 중앙값','전체 체감 p95','매진 응답 중앙값','발급','초과 발급'].map(label=>`<div class="lab">${label}</div>${'<div class="val pending">입력 예정</div>'.repeat(4)}`).join('')}
+      <div class="lab">처리량</div><div class="val">622<u>/s</u></div><div class="val">680<u>/s</u></div><div class="val acc">1,430<u>/s</u></div><div class="val">99<u>/s</u></div>
+      <div class="lab">완주 시간</div><div class="val">32.1<u>s</u></div><div class="val">29.4<u>s</u></div><div class="val acc">14.0<u>s</u></div><div class="val">202.0<u>s</u></div>
+      <div class="lab">발급</div><div class="val">10,000</div><div class="val">10,000</div><div class="val acc">10,000</div><div class="val">9,990</div>
+      <div class="lab">매진</div><div class="val">10,000</div><div class="val">10,000</div><div class="val acc">10,000</div><div class="val">6,771</div>
     </div>
     <div class="qpath"><div class="tag">v2.2 지연 분해</div><div class="step"><span>접수</span><b>입력 예정</b><p>첫 요청 → 202</p></div><div class="step acc"><span>대기·인지 지연</span><b>입력 예정</b><p>입장 판정 → 다음 폴링</p></div><div class="step"><span>입장 후 발급</span><b>입력 예정</b><p>입장권 → 201</p></div></div>
   </div>`,
-  foot:'처리량 · 완주 시간 실측 반영 · 지연 분해와 나머지 수치 입력 예정'
+  foot:'네 버전 동일 조건 비교　·　처리량 · 완주 시간 · 발급 · 매진'
 });
 
 /* ── 기술 스택 장표 — 기존 로고를 네 묶음으로 재배치 ── */
