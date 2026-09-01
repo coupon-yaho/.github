@@ -1045,10 +1045,14 @@ svg .dn{fill:var(--ink3);font-family:var(--sans);font-size:19px;font-weight:700}
 .erdbar b{color:#fff;font-weight:800}
 .erdbar .sp{margin-left:auto}
 /* ── 데모 · 영상 자리 ── */
-.vidslot{height:100%;border:0;border-radius:8px;overflow:hidden;
+.vidslot{position:relative;height:100%;border:0;border-radius:8px;overflow:hidden;
   background:#000;display:flex;align-items:center;justify-content:center}
 .vidslot span{font:600 18px/1 var(--mono);letter-spacing:.16em;color:var(--faint)}
 .vidslot video,.vidslot iframe{width:100%;height:100%;object-fit:contain;background:#000;border:0;border-radius:7px}
+.vidslot .video-link{position:absolute;right:18px;top:18px;z-index:2;padding:13px 18px;
+  border-radius:6px;background:rgba(251,251,248,.94);color:var(--ink);text-decoration:none;
+  font:700 16px/1 var(--mono);letter-spacing:.04em;box-shadow:0 4px 18px rgba(0,0,0,.22)}
+.vidslot .video-link:hover{background:#fff;color:var(--acc)}
 /* ── Q&A · 가운데 한 덩이 ── */
 .qaonly{display:flex;align-items:center;justify-content:center;
   font:800 148px/1 var(--sans);letter-spacing:-.05em;color:var(--ink)}
@@ -2039,7 +2043,7 @@ svg.lg{flex:none;display:block}
   <h2 class="title">데모 영상</h2>
   <p class="sub">고객 화면과 관제 화면을 나란히 녹화했습니다. 마지막 하나는 이 자리에서 직접 실행합니다.</p>
   <div class="body">
-    <div class="vidslot" style="grid-column:1/13;grid-row:1/9"><iframe src="https://www.youtube-nocookie.com/embed/hS4aFDgdmNM?rel=0" title="쿠폰 야~호 데모 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+    <div class="vidslot" style="grid-column:1/13;grid-row:1/9"><iframe src="https://www.youtube-nocookie.com/embed/hS4aFDgdmNM?rel=0" title="쿠폰 야~호 데모 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><a class="video-link" href="https://youtu.be/hS4aFDgdmNM" target="_blank" rel="noopener noreferrer">YouTube에서 보기 ↗</a></div>
   </div>
   <div class="foot"><div class="cap">평상시 발급 · 부하 주입 · 장애 주입 · 검증 배치　·　<b>라이브 실행</b></div><div class="of"></div></div>
 </section>
