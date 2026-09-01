@@ -138,9 +138,6 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 .divider .gn{position:absolute;right:-40px;bottom:-176px;font:800 560px/1 var(--sans);
   letter-spacing:-.07em;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.14);
   user-select:none;pointer-events:none}
-.divider .tm{position:absolute;right:var(--in);top:394px;font:700 19px/1 var(--mono);
-  letter-spacing:.16em;color:rgba(255,255,255,.55);padding:0 0 15px;
-  border-bottom:2px solid rgba(255,255,255,.22)}
 .divider .dchip{position:absolute;left:var(--in);top:394px;
   font:700 17px/1 var(--mono);letter-spacing:.3em;color:var(--acc-on);
   padding:0 0 15px;border-bottom:2px solid var(--acc-on)}
@@ -1361,7 +1358,7 @@ svg.lg{flex:none;display:block}
 
 <section class="slide divider" data-sec="1" data-ov="SECTION 01 · 왜 이렇게 만들었나">
   <div class="gn">01</div>
-  <div class="tm">3:00</div><div class="dchip">SECTION 01</div>
+  <div class="dchip">SECTION 01</div>
   <h2>설계 배경</h2>
   <div class="lead">주제를 고른 이유와 판정 기준, 최종 구조와 역할 분담까지.</div>
   <div class="idx"><div class="g">왜</div><div class="l">주제 선정 이유 · <b>목표와 버저닝 전략</b></div><div class="g">무엇을</div><div class="l">요구사항 일곱 가지와 <b>판정 기준</b></div><div class="g">어떻게</div><div class="l">시스템 아키텍처 · 파트별 역할 · <b>데이터 모델과 검증 스키마</b> · 기술 스택</div></div>
@@ -1630,7 +1627,7 @@ svg.lg{flex:none;display:block}
 
 <section class="slide divider" data-sec="2" data-ov="SECTION 02 · DB 안에서의 한계">
   <div class="gn">02</div>
-  <div class="tm">3:00</div><div class="dchip">SECTION 02</div>
+  <div class="dchip">SECTION 02</div>
   <h2>단일 DB 구조의 한계</h2>
   <div class="lead">재고를 DB 안에서 세는 두 방법을 같은 축에서 비교 측정하고, 어디서 막히는지까지 확인합니다.</div>
   <div class="idx"><div class="g">구조</div><div class="l">v1 아키텍처 — WEB · 쿠폰 서비스 · MySQL</div><div class="g">동시성</div><div class="l">락 개선 — v1.1 <b>비관적 락</b> → v1.2 <b>원자적 UPDATE</b></div><div class="g">비교</div><div class="l">v1 비교 — <b>v1.1 · v1.2</b></div></div>
@@ -1706,7 +1703,7 @@ svg.lg{flex:none;display:block}
 
 <section class="slide divider" data-sec="3" data-ov="SECTION 03 · 분산으로 넘어가기">
   <div class="gn">03</div>
-  <div class="tm">2:30</div><div class="dchip">SECTION 03</div>
+  <div class="dchip">SECTION 03</div>
   <h2>분산 구조 전환</h2>
   <div class="lead">재고를 세는 지점을 DB 밖으로 옮기고, 앞단에 대기열 게이트웨이를 세웁니다.</div>
   <div class="idx" style="row-gap:16px"><div class="g">구조</div><div class="l">v2 아키텍처 — <b>대기열 · Redis · 쿠폰 서비스</b></div><div class="g">선점</div><div class="l">v2.1 — <b>Redis 원자 카운터</b></div><div class="g">규칙</div><div class="l">v2.2 대기열 — <b>요청 경로 · 제어 평면 · 순수 판정</b></div><div class="g">규칙</div><div class="l">진입 규칙 — <b>세 갈래 판정</b></div><div class="g">진행</div><div class="l">검증 절차 — <b>페이즈 게이트</b></div><div class="g">비교</div><div class="l">최종 비교 — <b>v1.1 · v1.2 · v2.1 · v2.2</b></div><div class="g">설계</div><div class="l">v3 — <b>선점·영속 분리</b></div></div>
@@ -1825,7 +1822,7 @@ svg.lg{flex:none;display:block}
 
 <section class="slide divider" data-sec="4" data-ov="SECTION 04 · 검증과 관제">
   <div class="gn">04</div>
-  <div class="tm">6:00</div><div class="dchip">SECTION 04</div>
+  <div class="dchip">SECTION 04</div>
   <h2>검증과 관제</h2>
   <div class="lead">결과가 맞는지 어떻게 확인하고, 어긋나면 어떻게 알아채는지를 항목별로 다룹니다.</div>
   <div class="idx"><div class="g">발급 API</div><div class="l">멱등성 — 같은 요청 두 번에도 <b>쿠폰은 한 장</b></div><div class="g">배치</div><div class="l">컴포넌트 흐름 · 시드 · 결함 주입 · 집합 대조 · 재실행 결정론 · <b>이상 감지</b></div><div class="g">관제</div><div class="l">다섯 화면과 <b>지표 흐름</b></div></div>
@@ -2047,7 +2044,7 @@ svg.lg{flex:none;display:block}
 
 <section class="slide divider" data-sec="5" data-ov="SECTION 05 · 마무리">
   <div class="gn">05</div>
-  <div class="tm">0:30</div><div class="dchip">SECTION 05</div>
+  <div class="dchip">SECTION 05</div>
   <h2>정리</h2>
   <div class="lead">동작하는 화면을 보여 주고 마칩니다.</div>
   <div class="idx"><div class="g">보여주기</div><div class="l"><a href="https://youtu.be/hS4aFDgdmNM" target="_blank" rel="noopener noreferrer">데모 영상</a> 평상시 · 부하 · 장애 · 검증 배치</div><div class="g">질문</div><div class="l">Q &amp; A</div></div>
