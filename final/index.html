@@ -343,6 +343,8 @@ svg .flow{animation:none !important}
   svg .drawn{stroke-dashoffset:0 !important;animation:none}
   svg .fadein{opacity:1 !important;animation:none}
   .ov,.ovbtn,.prog,.erdov,.erdbar{display:none !important}
+  .vidslot iframe,.vidslot .video-link{display:none !important}
+  .vidslot .video-print{display:block !important}
   .slide{box-shadow:none}
 }
 
@@ -1053,6 +1055,19 @@ svg .dn{fill:var(--ink3);font-family:var(--sans);font-size:19px;font-weight:700}
   border-radius:6px;background:rgba(251,251,248,.94);color:var(--ink);text-decoration:none;
   font:700 16px/1 var(--mono);letter-spacing:.04em;box-shadow:0 4px 18px rgba(0,0,0,.22)}
 .vidslot .video-link:hover{background:#fff;color:var(--acc)}
+.vidslot .video-print{display:none;position:absolute;inset:0;overflow:hidden;
+  background:#071a36;color:#fff;text-decoration:none}
+.vidslot .video-print img{display:block;width:100%;height:100%;object-fit:cover}
+.vidslot .video-print::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(5,14,30,.92),rgba(5,14,30,.18) 66%),
+    linear-gradient(90deg,rgba(5,14,30,.72),rgba(5,14,30,.08) 68%,rgba(5,14,30,.3))}
+.vidslot .vp-copy{position:absolute;left:82px;bottom:74px;z-index:1;display:flex;flex-direction:column;gap:14px;color:#fff}
+.vidslot .vp-copy i{font:700 17px/1 var(--mono);font-style:normal;letter-spacing:.18em;color:rgba(255,255,255,.7)}
+.vidslot .vp-copy b{font-size:42px;line-height:1.15;letter-spacing:-.03em;color:#fff}
+.vidslot .vp-copy em{font:600 18px/1 var(--mono);font-style:normal;color:rgba(255,255,255,.78)}
+.vidslot .vp-play{position:absolute;right:82px;bottom:72px;z-index:1;width:76px;height:76px;
+  border:2px solid rgba(255,255,255,.8);border-radius:50%;display:grid;place-items:center;
+  padding-left:5px;font-size:30px;color:#fff;background:rgba(5,14,30,.32)}
 /* ── Q&A · 가운데 한 덩이 ── */
 .qaonly{display:flex;align-items:center;justify-content:center;
   font:800 148px/1 var(--sans);letter-spacing:-.05em;color:var(--ink)}
@@ -2043,7 +2058,7 @@ svg.lg{flex:none;display:block}
   <h2 class="title">데모 영상</h2>
   <p class="sub">고객 화면과 관제 화면을 나란히 녹화했습니다. 마지막 하나는 이 자리에서 직접 실행합니다.</p>
   <div class="body">
-    <div class="vidslot" style="grid-column:1/13;grid-row:1/9"><iframe src="https://www.youtube-nocookie.com/embed/hS4aFDgdmNM?rel=0" title="쿠폰 야~호 데모 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><a class="video-link" href="https://youtu.be/hS4aFDgdmNM" target="_blank" rel="noopener noreferrer">YouTube에서 보기 ↗</a></div>
+    <div class="vidslot" style="grid-column:1/13;grid-row:1/9"><iframe src="https://www.youtube-nocookie.com/embed/hS4aFDgdmNM?rel=0" title="쿠폰 야~호 데모 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><a class="video-link" href="https://youtu.be/hS4aFDgdmNM" target="_blank" rel="noopener noreferrer">YouTube에서 보기 ↗</a><a class="video-print" href="https://youtu.be/hS4aFDgdmNM"><img src="assets/demo-thumbnail.jpg" alt="쿠폰 야~호 데모 영상 미리보기"><span class="vp-copy"><i>DEMO VIDEO</i><b>쿠폰 야~호 데모 영상</b><em>youtube.com · hS4aFDgdmNM</em></span><span class="vp-play">▶</span></a></div>
   </div>
   <div class="foot"><div class="cap">평상시 발급 · 부하 주입 · 장애 주입 · 검증 배치　·　<b>라이브 실행</b></div><div class="of"></div></div>
 </section>
