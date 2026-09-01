@@ -120,7 +120,8 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 .cover{position:absolute;inset:0}
 .cover .mark{position:absolute;left:96px;width:1728px;top:100px;text-align:center;
   font-size:20px;font-weight:700;letter-spacing:6px;color:var(--ink3)}
-.cover .wm{position:absolute;left:400px;top:174px;width:1120px;height:340px}
+.cover .wm{position:absolute;left:400px;top:174px;width:1120px;height:340px;
+  object-fit:contain;background-image:none!important}
 .cover .accbar{position:absolute;left:918px;top:576px;width:84px;height:6px;background:var(--acc)}
 .cover .ttl{position:absolute;left:96px;width:1728px;top:618px;text-align:center;
   font-size:84px;font-weight:800;line-height:1.18;letter-spacing:-3px}
@@ -1329,7 +1330,7 @@ svg.lg{flex:none;display:block}
 <section class="slide">
   <div class="cover">
     <div class="mark">LG유플러스 유레카 백엔드 · 종합프로젝트 최종 발표</div>
-    <div class="wm" role="img" aria-label="쿠폰 야~호"></div>
+    <img class="wm" src="assets/logo-main.png" alt="쿠폰 야~호">
     <div class="accbar"></div>
     <div class="ttl">통신사 브랜드데이<br>선착순 쿠폰 발급 시스템</div>
     <div class="rule"></div>
